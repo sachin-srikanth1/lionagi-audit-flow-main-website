@@ -1,0 +1,5267 @@
+# Ocean-Fusion Console Website - Complete Source Code
+# Generated: Sun Sep  7 17:21:33 EDT 2025
+# ================================================
+
+
+# ================================================
+# FILE: src/App.css
+# ================================================
+
+/* App.css - Ocean-Fusion specific overrides only */
+
+/* Remove default Vite styles that conflict with Ocean-Fusion design system */
+/* All styling is now handled by the comprehensive Ocean-Fusion system in index.css */
+
+#root {
+  /* Let Ocean-Fusion handle the container system */
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+}
+
+/* Additional Ocean-Fusion specific overrides can go here if needed */
+
+
+# ================================================
+# FILE: src/App.tsx
+# ================================================
+
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ScrollToHashEffect } from "@/components/ScrollToHashEffect";
+import { useOceanFusionConsole } from "@/hooks/useOceanFusion";
+import Index from "./pages/Index";
+import Projects from "./pages/Projects";
+import McpTools from "./pages/McpTools";
+import Booking from "./pages/Booking";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
+
+const App = () => {
+  // Initialize Ocean-Fusion particle system
+  const { engine, isLoaded, error } = useOceanFusionConsole();
+  
+  // Log particle system status for debugging
+  if (error) {
+    console.warn('Ocean-Fusion particles failed to load:', error);
+  } else if (isLoaded && engine) {
+    console.log('Ocean-Fusion particles loaded successfully');
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToHashEffect />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/mcp-tools" element={<McpTools />} />
+            <Route path="/booking" element={<Booking />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;
+
+
+# ================================================
+# FILE: src/components/About.tsx
+# ================================================
+
+const About = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border">
+      <div className="max-w-4xl">
+        <h2 className="text-lg font-medium text-foreground mb-4">About</h2>
+        <p className="text-base text-muted-foreground mb-4">
+          Ocean Li — Contributed to LlamaIndex, maintained Autogen/AG2, built LionAGI. 
+          Agent systems architecture and multi-agent orchestration.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default About;
+
+# ================================================
+# FILE: src/components/AnimatedTerminalLog.tsx
+# ================================================
+
+import { useEffect, useState } from "react";
+import { CheckCircle, Loader2, ArrowRight, Play } from "lucide-react";
+
+interface LogStep {
+  id: string;
+  command: string;
+  description: string;
+  duration: number;
+  delay: number;
+}
+
+const logSteps: LogStep[] = [
+  {
+    id: "init",
+    command: "Initialize AI processing pipeline",
+    description: "Loading neural models and data connectors...",
+    duration: 1200,
+    delay: 0
+  },
+  {
+    id: "extract",
+    command: "Extract invoice data",
+    description: "OCR scanning, field identification, validation...",
+    duration: 800,
+    delay: 1400
+  },
+  {
+    id: "validate",
+    command: "Validate against business rules",
+    description: "Cross-reference vendors, check approval limits...",
+    duration: 600,
+    delay: 2400
+  },
+  {
+    id: "route",
+    command: "Route for approval",
+    description: "Determine approvers, send notifications...",
+    duration: 400,
+    delay: 3200
+  },
+  {
+    id: "update",
+    command: "Update accounting system",
+    description: "Post to ledger, generate reports...",
+    duration: 500,
+    delay: 3800
+  },
+  {
+    id: "complete",
+    command: "Process complete",
+    description: "Invoice processed in 2.3 seconds",
+    duration: 800,
+    delay: 4500
+  }
+];
+
+type StepStatus = "pending" | "running" | "completed";
+
+const AnimatedTerminalLog = () => {
+  const [stepStatuses, setStepStatuses] = useState<Record<string, StepStatus>>(
+    logSteps.reduce((acc, step) => ({ ...acc, [step.id]: "pending" }), {})
+  );
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentStep, setCurrentStep] = useState(-1);
+
+  const startAnimation = () => {
+    setIsPlaying(true);
+    setCurrentStep(-1);
+    
+    // Reset all statuses
+    setStepStatuses(
+      logSteps.reduce((acc, step) => ({ ...acc, [step.id]: "pending" }), {})
+    );
+
+    // Run each step with timing
+    logSteps.forEach((step, index) => {
+      // Start step
+      setTimeout(() => {
+        setCurrentStep(index);
+        setStepStatuses(prev => ({ ...prev, [step.id]: "running" }));
+      }, step.delay);
+
+      // Complete step
+      setTimeout(() => {
+        setStepStatuses(prev => ({ ...prev, [step.id]: "completed" }));
+        if (index === logSteps.length - 1) {
+          setIsPlaying(false);
+          setCurrentStep(-1);
+        }
+      }, step.delay + step.duration);
+    });
+  };
+
+  // Auto-start animation on component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startAnimation();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getStepIcon = (stepId: string, status: StepStatus) => {
+    switch (status) {
+      case "running":
+        return <Loader2 className="h-4 w-4 text-console-cyan animate-spin" />;
+      case "completed":
+        return <CheckCircle className="h-4 w-4 text-console-green" />;
+      default:
+        return <div className="h-4 w-4 rounded-full border border-muted-foreground/30" />;
+    }
+  };
+
+  const getStepTextColor = (status: StepStatus) => {
+    switch (status) {
+      case "running":
+        return "text-console-cyan";
+      case "completed":
+        return "text-console-green";
+      default:
+        return "text-muted-foreground";
+    }
+  };
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Watch AI in Action
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            See how an AI system processes a complex invoice in seconds, not minutes
+          </p>
+        </div>
+
+        <div className="terminal bg-surface/50 border-console-green max-w-3xl mx-auto">
+          <div className="terminal-header">
+            <div className="terminal-dot terminal-dot--red"></div>
+            <div className="terminal-dot terminal-dot--amber"></div>
+            <div className="terminal-dot terminal-dot--green"></div>
+            <span className="font-mono text-xs text-muted-foreground">ocean-ai-system.terminal</span>
+            
+            {/* Replay button */}
+            <button 
+              onClick={startAnimation}
+              disabled={isPlaying}
+              className="ml-auto flex items-center gap-2 px-3 py-1 bg-console-green/10 border border-console-green/30 rounded text-xs font-mono text-console-green hover:bg-console-green/20 transition-colors disabled:opacity-50"
+            >
+              <Play className="h-3 w-3" />
+              {isPlaying ? "Running..." : "Replay"}
+            </button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            {/* Initial prompt */}
+            <div className="flex items-center gap-2 text-console-green font-mono text-sm">
+              <span>$</span>
+              <span>process-invoice --file="vendor-invoice-2024-09-07.pdf"</span>
+            </div>
+
+            {/* Processing steps */}
+            <div className="space-y-3 pl-4">
+              {logSteps.map((step, index) => (
+                <div 
+                  key={step.id} 
+                  className={`flex items-start gap-3 transition-all duration-300 ${
+                    stepStatuses[step.id] === "running" ? "scale-[1.02]" : ""
+                  }`}
+                >
+                  <div className="mt-1">
+                    {getStepIcon(step.id, stepStatuses[step.id])}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className={`font-mono text-sm ${getStepTextColor(stepStatuses[step.id])}`}>
+                      <ArrowRight className="inline h-3 w-3 mr-2" />
+                      {step.command}
+                    </div>
+                    
+                    {stepStatuses[step.id] !== "pending" && (
+                      <div className="text-xs text-muted-foreground mt-1 pl-5 font-mono">
+                        {step.description}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {stepStatuses[step.id] === "completed" && step.id === "complete" && (
+                    <div className="flex items-center gap-2 px-2 py-1 bg-console-green/20 border border-console-green/30 rounded">
+                      <div className="h-2 w-2 bg-console-green rounded-full animate-pulse"></div>
+                      <span className="font-mono text-xs text-console-green">DONE</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Final result */}
+            {stepStatuses.complete === "completed" && (
+              <div className="mt-6 p-4 bg-console-green/10 border border-console-green/30 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono text-sm text-console-green">
+                    <CheckCircle className="inline h-4 w-4 mr-2" />
+                    Invoice processed successfully
+                  </div>
+                  <div className="font-mono text-sm text-console-amber">
+                    Time saved: 42.7 minutes
+                  </div>
+                </div>
+                <div className="font-mono text-xs text-muted-foreground mt-2">
+                  Manual process would take ~45 minutes. AI completed in 2.3 seconds.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Performance metrics */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <div className="text-center p-4 bg-surface/30 border border-border/30 rounded-lg">
+            <div className="font-mono text-2xl font-bold text-console-green">2.3s</div>
+            <div className="text-sm text-muted-foreground">Processing Time</div>
+          </div>
+          <div className="text-center p-4 bg-surface/30 border border-border/30 rounded-lg">
+            <div className="font-mono text-2xl font-bold text-console-cyan">99.7%</div>
+            <div className="text-sm text-muted-foreground">Accuracy Rate</div>
+          </div>
+          <div className="text-center p-4 bg-surface/30 border border-border/30 rounded-lg">
+            <div className="font-mono text-2xl font-bold text-console-amber">$180K</div>
+            <div className="text-sm text-muted-foreground">Annual Savings</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AnimatedTerminalLog;
+
+# ================================================
+# FILE: src/components/BookingCTA.tsx
+# ================================================
+
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Clock, CheckCircle } from "lucide-react";
+
+const BookingCTA = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-20 border-t border-border/30">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl font-bold text-foreground mb-4">
+          Agentic Development Consulting
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Expert guidance for agent systems. Build what you envision with practical patterns.
+        </p>
+      </div>
+
+      {/* Quick tier overview */}
+      <div className="grid md:grid-cols-4 gap-6 mb-12 max-w-5xl mx-auto">
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">15 min</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground mb-1">$79</p>
+          <p className="text-sm text-muted-foreground">Quick consultation</p>
+          <div className="flex items-center justify-center gap-1 mt-1">
+            <CheckCircle className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Discord support</span>
+          </div>
+        </div>
+
+        <div className="text-center relative border-t-4 border-primary/40 pt-4 rounded-lg bg-primary/5">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">30 min</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground mb-1">$159</p>
+          <p className="text-sm text-muted-foreground">Architecture session</p>
+          <div className="flex items-center justify-center gap-1 mt-1">
+            <CheckCircle className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Discord support</span>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">60 min</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground mb-1">$249</p>
+          <p className="text-sm text-muted-foreground">Extended session</p>
+          <div className="flex items-center justify-center gap-1 mt-1">
+            <CheckCircle className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Discord support</span>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">105 min</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground mb-1">$499</p>
+          <p className="text-sm text-muted-foreground">Comprehensive</p>
+          <div className="flex items-center justify-center gap-1 mt-1">
+            <CheckCircle className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Discord + ad-hoc</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-center">
+        <Link to="/booking">
+          <Button size="lg" className="text-lg px-8 energy-glow cta contact">
+            Book a session
+          </Button>
+        </Link>
+      </div>
+    </section>
+  );
+};
+
+export default BookingCTA;
+
+# ================================================
+# FILE: src/components/ClientProof.tsx
+# ================================================
+
+import React from "react";
+
+type Client = { 
+  name: string; 
+  logo?: React.ReactNode; 
+  href?: string; 
+  permitted?: boolean; 
+};
+
+interface Props { 
+  clients: Client[]; 
+  textFallback?: string; 
+}
+
+export default function ClientProof({ 
+  clients, 
+  textFallback = "Trusted by teams at Google Cloud, NVIDIA, and Clay."
+}: Props) {
+  const permitted = clients.filter(c => c.permitted && c.logo);
+  
+  if (permitted.length === 0) {
+    return (
+      <section aria-label="Client proof" className="max-w-7xl mx-auto px-6 pt-10 pb-6">
+        <p className="text-sm text-muted-foreground">{textFallback}</p>
+      </section>
+    );
+  }
+  
+  return (
+    <section aria-label="Client proof" className="max-w-7xl mx-auto px-6 pt-10 pb-6">
+      <p className="text-xs text-muted-foreground mb-3">Selected teams I've advised</p>
+      <ul className="flex flex-wrap items-center gap-x-10 gap-y-4 opacity-80">
+        {permitted.map((c) => (
+          <li key={c.name} className="h-6 flex items-center">
+            {c.href ? (
+              <a href={c.href} target="_blank" rel="noopener noreferrer" className="block h-6">
+                <span className="sr-only">{c.name}</span>
+                <div className="h-6 [&_svg]:h-6 [&_svg]:w-auto [&_svg]:opacity-80 hover:[&_svg]:opacity-100 transition-opacity">
+                  {c.logo}
+                </div>
+              </a>
+            ) : (
+              <div className="h-6 [&_svg]:h-6 [&_svg]:w-auto opacity-80">{c.logo}</div>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[11px] text-muted-foreground/70">
+        Logos used with permission. For identification only; no endorsement implied.
+      </p>
+    </section>
+  );
+}
+
+# ================================================
+# FILE: src/components/Contact.tsx
+# ================================================
+
+const Contact = () => {
+  return (
+    <section id="contact" className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30 contact">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-6">About Ocean</h2>
+        <div className="max-w-3xl space-y-4">
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Creator of <strong className="text-foreground">LionAGI</strong> and former <strong className="text-foreground">Autogen</strong> maintainer. 
+            I help teams build robust agent systems that actually work in production.
+          </p>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            From debugging agent loops to architecting multi-agent orchestration, I bring practical solutions from real deployments. 
+            Whether you need MCP integration, failure handling strategies, or just a second opinion on your architecture—I've been there.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Contact;
+
+# ================================================
+# FILE: src/components/CredibilityLine.tsx
+# ================================================
+
+import { TrendingUp, Activity, DollarSign, Clock } from "lucide-react";
+
+const CredibilityLine = () => {
+  return (
+    <section className="border-y border-console-green/30 bg-console-green/5 py-8">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+          {/* Main credibility statement */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="status-indicator status-indicator--online"></div>
+              <Activity className="h-5 w-5 text-console-green" />
+            </div>
+            <div className="text-center md:text-left">
+              <div className="font-mono text-lg md:text-xl font-bold text-console-green neon-glow">
+                Powering $2M+ in Automated AI Decisions Daily
+              </div>
+              <div className="text-sm text-muted-foreground font-mono">
+                Systems running 24/7 across enterprise clients
+              </div>
+            </div>
+          </div>
+
+          {/* Supporting metrics */}
+          <div className="flex items-center gap-8">
+            <div className="text-center">
+              <div className="flex items-center gap-1 justify-center mb-1">
+                <TrendingUp className="h-4 w-4 text-console-cyan" />
+                <span className="font-mono text-lg font-bold text-console-cyan">99.7%</span>
+              </div>
+              <div className="text-xs text-muted-foreground">Accuracy</div>
+            </div>
+
+            <div className="text-center">
+              <div className="flex items-center gap-1 justify-center mb-1">
+                <Clock className="h-4 w-4 text-console-amber" />
+                <span className="font-mono text-lg font-bold text-console-amber">24/7</span>
+              </div>
+              <div className="text-xs text-muted-foreground">Uptime</div>
+            </div>
+
+            <div className="text-center">
+              <div className="flex items-center gap-1 justify-center mb-1">
+                <DollarSign className="h-4 w-4 text-console-green" />
+                <span className="font-mono text-lg font-bold text-console-green">ROI</span>
+              </div>
+              <div className="text-xs text-muted-foreground">In Weeks</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Animated data flow indicator */}
+        <div className="mt-6 flex justify-center">
+          <div className="flex items-center gap-2 px-4 py-2 bg-surface/50 border border-console-green/30 rounded-full">
+            <div className="flex gap-1">
+              <div className="h-2 w-2 bg-console-green rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+              <div className="h-2 w-2 bg-console-cyan rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></div>
+              <div className="h-2 w-2 bg-console-amber rounded-full animate-pulse" style={{ animationDelay: '400ms' }}></div>
+            </div>
+            <span className="font-mono text-xs text-muted-foreground">LIVE DATA FLOW</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default CredibilityLine;
+
+# ================================================
+# FILE: src/components/FinalCTA.tsx
+# ================================================
+
+import { Button } from "@/components/ui/button";
+
+const FinalCTA = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-12 border-t border-border/30">
+      <div className="max-w-3xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+          Let's See If We're a Fit
+        </h2>
+        
+        <div className="mb-6 space-y-1">
+          <p className="text-xl font-semibold text-foreground">
+            30-Minute Strategy Session
+          </p>
+          <p className="text-lg text-muted-foreground">
+            No slides. No sales pitch.
+          </p>
+        </div>
+
+        <div className="mb-6">
+          <p className="text-lg text-muted-foreground mb-2">We'll:</p>
+          <ul className="space-y-1 text-muted-foreground max-w-md mx-auto text-left">
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-1">•</span>
+              <span>Map one of your workflows live</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-1">•</span>
+              <span>Identify your quick wins</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-1">•</span>
+              <span>Show you exactly what's possible</span>
+            </li>
+          </ul>
+        </div>
+
+        <p className="text-lg text-muted-foreground mb-6">
+          <span className="font-semibold">If it makes sense to work together, great.</span>
+          <br />
+          If not, you'll leave with a clear action plan.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+          <Button size="lg" className="text-lg px-8 py-6 energy-glow" asChild>
+            <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+              → Claim Your Strategy Session
+            </a>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="text-lg px-8 py-6 border-primary/30 hover:border-primary/50 hover:bg-primary/5"
+            asChild
+          >
+            <a href="#demo" rel="noopener noreferrer">
+              See a 3-minute system demo
+            </a>
+          </Button>
+        </div>
+
+        <p className="text-sm text-muted-foreground italic">
+          Limited to 5 per month
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default FinalCTA;
+
+# ================================================
+# FILE: src/components/Footer.tsx
+# ================================================
+
+const Footer = () => {
+  return (
+    <footer className="border-t border-border">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Trust Elements */}
+        <div className="grid md:grid-cols-4 gap-6 mb-8 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span>Systems processing 1M+ automated decisions monthly</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span>Working with teams from seed-stage to Series C</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span>Building production AI since 2023</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span>Based in Austin, TX • Working globally</span>
+          </div>
+        </div>
+        
+        {/* Footer Links */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground pt-8 border-t border-border/50">
+          <p>© 2025 Ocean Li | Agentic Systems Architect</p>
+          <div className="flex gap-6">
+            <a 
+              href="https://calendly.com/ocean-lionagi" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-accent hover:text-accent/80 transition-colors"
+            >
+              Book a session
+            </a>
+            <a 
+              href="mailto:ocean@lionagi.ai"
+              className="hover:text-foreground transition-colors"
+            >
+              Email
+            </a>
+            <a 
+              href="https://www.linkedin.com/in/quantoceanli/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              LinkedIn
+            </a>
+            <a 
+              href="https://github.com/khive-ai/lionagi"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
+            <a 
+              href="https://khive-ai.github.io/lionagi/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Docs
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
+
+# ================================================
+# FILE: src/components/Hero.tsx
+# ================================================
+
+import { useEffect, useRef } from "react";
+
+const Hero = () => {
+  const btnRef = useRef<HTMLAnchorElement>(null);
+  
+  // Console CTA magnet effect
+  useEffect(() => {
+    const el = btnRef.current; 
+    if (!el) return;
+    let raf: number | undefined;
+    
+    function onMove(e: PointerEvent) {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const dx = e.clientX - cx, dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const influence = Math.max(0, 1 - dist/80);
+      const tx = (dx/dist || 0) * influence * 6;
+      const ty = (dy/dist || 0) * influence * 6;
+      cancelAnimationFrame(raf!);
+      raf = requestAnimationFrame(() => { 
+        el.style.transform = `translate(${tx}px,${ty}px)`; 
+      });
+    }
+    
+    function reset() { 
+      el.style.transform = "translate(0,0)"; 
+    }
+    
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerleave", reset);
+    return () => { 
+      window.removeEventListener("pointermove", onMove); 
+      window.removeEventListener("pointerleave", reset); 
+    };
+  }, []);
+
+  return (
+    <section className="hero relative min-h-screen overflow-hidden">
+      {/* Three Column Layout with Particles in Center */}
+      <div className="relative w-full min-h-screen flex">
+        
+        {/* Left Column - Main Hero Content */}
+        <div className="w-[35%] flex items-center justify-end px-8 z-10">
+          <div className="max-w-lg">
+            <div className="console-prompt mb-4">
+              <span className="font-mono text-console-green">$ ./run-vision.sh</span>
+            </div>
+            
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+              <span className="typewriter">Your AI Vision,<br/>Built and Running</span>
+              <span className="block text-console-cyan mt-2 neon-glow">In Weeks — Not Years</span>
+            </h1>
+            
+            <div className="terminal bg-surface/50 border-console-green mb-6">
+              <div className="terminal-header">
+                <div className="terminal-dot terminal-dot--red"></div>
+                <div className="terminal-dot terminal-dot--amber"></div>
+                <div className="terminal-dot terminal-dot--green"></div>
+                <span className="font-mono text-xs text-muted-foreground">ocean-systems.terminal</span>
+              </div>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed p-4">
+                <span className="text-console-green">&gt;</span> Real Savings, Real Results — Not AI Theater<br />
+                <span className="text-console-green">&gt;</span> I build production systems that cut costs by 80%+ and ROI in weeks
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Center Column - Particle Field (30% width) */}
+        <div className="w-[30%] relative">
+          {/* Particles render here via canvas */}
+          {/* Add subtle grid for depth */}
+          <div className="absolute inset-0 grid-overlay--console opacity-5"></div>
+        </div>
+
+        {/* Right Column - Trust Signals & CTAs */}
+        <div className="w-[35%] flex items-center justify-start px-8 z-10">
+          <div className="max-w-lg">
+            {/* Enhanced Trust Signal */}
+            <div className="mb-8 p-4 bg-console-green/10 border border-console-green/30 rounded-md">
+              <div className="flex items-center gap-2">
+                <div className="status-indicator status-indicator--online"></div>
+                <span className="font-mono text-sm text-console-green">LIVE SYSTEMS STATUS</span>
+              </div>
+              <div className="mt-3">
+                <p className="text-foreground font-medium">
+                  Powering $2M+ in automated AI decisions daily
+                </p>
+                <div className="flex flex-col gap-2 mt-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-console-green rounded-full"></div>
+                    <span className="font-mono text-xs text-muted-foreground">99.7% accuracy</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-console-cyan rounded-full"></div>
+                    <span className="font-mono text-xs text-muted-foreground">24/7 uptime</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-console-amber rounded-full"></div>
+                    <span className="font-mono text-xs text-muted-foreground">ROI in weeks</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Console CTAs */}
+            <div className="flex flex-col gap-4 mb-6">
+              <button className="btn btn--console text-base px-6 py-3 cta w-full" style={{ transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+                <a 
+                  ref={btnRef} 
+                  href="https://calendly.com/ocean-lionagi" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2"
+                >
+                  <span>&gt;</span> See What's Possible in 30 Minutes
+                </a>
+              </button>
+              
+              <button className="btn btn--outline border-console-cyan text-console-cyan hover:bg-console-cyan/10 text-base px-6 py-3 cta w-full">
+                <a href="#demo" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                  <span>&gt;</span> See a 3-minute Demo
+                </a>
+              </button>
+            </div>
+
+            <div className="font-mono text-sm text-console-green opacity-70">
+              <span className="text-console-amber">$</span> echo "Free Strategy Session Available"
+            </div>
+            
+            {/* OCEAN.EXE Status */}
+            <div className="mt-8">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  <div className="terminal-dot terminal-dot--green"></div>
+                  <div className="terminal-dot terminal-dot--green"></div>
+                  <div className="terminal-dot terminal-dot--green"></div>
+                </div>
+                <span className="font-mono text-sm text-console-green neon-glow">SYSTEM ACTIVE</span>
+              </div>
+              <div className="font-mono text-xs text-muted-foreground mt-1">
+                OCEAN.EXE RUNNING
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
+
+# ================================================
+# FILE: src/components/icons/Mcp.tsx
+# ================================================
+
+// React import only needed for JSX transform
+
+type IconProps = { className?: string; title?: string };
+
+/** Header blueprint (one-time draw) */
+export function McpBlueprint({ className, title = "MCP blueprint" }: IconProps) {
+  return (
+    <svg viewBox="0 0 760 120" className={className} role="img" aria-label={title}>
+      <style>{`
+        .n{stroke:#cbd5e1;stroke-width:1.5;fill:none;rx:8}
+        .f{stroke:currentColor;stroke-width:2;fill:none;stroke-dasharray:260;stroke-dashoffset:260}
+        @media (prefers-reduced-motion:no-preference){ .on .f{animation:draw .68s ease-out forwards}}
+        @keyframes draw{to{stroke-dashoffset:0}}
+      `}</style>
+      <g className="on">
+        <rect className="n" x="90"  y="42" width="120" height="36" rx="8"/>
+        <rect className="n" x="270" y="42" width="120" height="36" rx="8"/>
+        <rect className="n" x="450" y="42" width="120" height="36" rx="8"/>
+        <rect className="n" x="630" y="42" width="120" height="36" rx="8"/>
+        <path className="f" d="M210 60 H270"/>
+        <path className="f" d="M390 60 H450"/>
+        <path className="f" d="M570 60 H630"/>
+      </g>
+    </svg>
+  );
+}
+
+/** MEMORY MCP — ring + write-head dot */
+export function MemoryMcpIcon({ className, title = "Memory MCP" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .r{fill:none;stroke:#94a3b8;stroke-width:1.8;opacity:0.45}
+        .a{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+        .p{fill:currentColor;transform-origin:center}
+        svg * { vector-effect: non-scaling-stroke; }
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .r{animation:fade-ring 2s ease-in-out infinite}
+          svg:hover .dash{animation:spin 1s linear infinite}
+          svg:hover .pulse{animation:dot-pulse 2s ease-in-out infinite}
+        }
+        @keyframes spin{to{stroke-dashoffset:-140}}
+        @keyframes dot-pulse{
+          0%,100%{transform:scale(1);opacity:1}
+          50%{transform:scale(2);opacity:0.6}
+        }
+        @keyframes fade-ring{
+          0%,100%{opacity:0.45}
+          50%{opacity:0.2}
+        }
+      `}</style>
+      <circle className="r" cx="32" cy="32" r="18"/>
+      <circle className="a dash" cx="32" cy="32" r="16" strokeDasharray="70 70" />
+      <circle className="p pulse" cx="48" cy="32" r="2.2"/>
+    </svg>
+  );
+}
+
+/** COGNITION MCP — weighted graph */
+export function CognitionMcpIcon({ className, title = "Cognition MCP" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .e{stroke:#94a3b8;stroke-width:1.5;fill:none;stroke-linecap:round;transition:all .3s}
+        .m{stroke:currentColor;stroke-width:2;transition:all .6s}
+        .n{fill:#cbd5e1;transform-origin:center;transition:transform .3s}
+        svg * { vector-effect: non-scaling-stroke; }
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .e{opacity:0.6}
+          svg:hover .m{stroke-width:2.4}
+          svg:hover .n:nth-child(1){animation:node-pulse 2s ease-in-out infinite}
+          svg:hover .n:nth-child(2){animation:node-pulse 2s ease-in-out infinite .3s}
+          svg:hover .n:nth-child(3){animation:node-pulse 2s ease-in-out infinite .6s}
+          svg:hover .n:nth-child(4){animation:node-pulse 2s ease-in-out infinite .9s}
+          svg:hover .n:nth-child(5){animation:node-pulse 2s ease-in-out infinite 1.2s}
+        }
+        @keyframes node-pulse{
+          0%,100%{transform:scale(1);opacity:1}
+          50%{transform:scale(1.5);opacity:0.7}
+        }
+      `}</style>
+      <circle className="n" cx="20" cy="42" r="4.2"/>
+      <circle className="n" cx="44" cy="20" r="3.6"/>
+      <circle className="n" cx="48" cy="44" r="3.4"/>
+      <circle className="n" cx="24" cy="20" r="3.2"/>
+      <circle className="n" cx="36" cy="34" r="3.0"/>
+      <path className="e" d="M24 20 L36 34"/>
+      <path className="e m" d="M20 42 C28 36, 34 30, 44 20"/>
+      <path className="e" d="M36 34 L48 44"/>
+      <path className="e" d="M20 42 L48 44"/>
+    </svg>
+  );
+}
+
+/** WAVES MCP — accountability waveform */
+export function WavesMcpIcon({ className, title = "Waves MCP" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .w{fill:none;stroke:#94a3b8;stroke-width:1.6;opacity:0.5}
+        .a{fill:none;stroke:currentColor;stroke-width:2;stroke-dasharray:60 60;stroke-dashoffset:0}
+        svg * { vector-effect: non-scaling-stroke; }
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .w{animation:fade-wave 2s ease-in-out infinite}
+          svg:hover .a{animation:sine-flow 1.5s linear infinite}
+        }
+        @keyframes sine-flow{
+          from{stroke-dashoffset:0}
+          to{stroke-dashoffset:-120}
+        }
+        @keyframes fade-wave{
+          0%,100%{opacity:0.5}
+          50%{opacity:0.2}
+        }
+      `}</style>
+      <path className="w" d="M6 40 C14 20, 22 20, 30 40 S46 60, 58 32" />
+      <path className="a" d="M6 32 C14 12, 22 12, 30 32 S46 52, 58 24" />
+    </svg>
+  );
+}
+
+/** IDE MCP — docking handshake */
+export function IdeDockIcon({ className, title = "IDE MCP" }: IconProps) {
+  return (
+    <svg viewBox="0 0 140 56" className={className} role="img" aria-label={title}>
+      <style>{`
+        .b{fill:#0f172a;stroke:#1f2937;stroke-width:1.5;rx:8}
+        .l{stroke:currentColor;stroke-width:2;fill:none;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .45s}
+        .p{transform-box:fill-box;transform-origin:center;transition:transform .45s}
+        text{font:600 12px ui-sans-serif,system-ui,Inter;fill:#94a3b8}
+        @media (prefers-reduced-motion:no-preference){ svg:hover .p{transform:translateX(14px)} svg:hover .l{stroke-dashoffset:0} }
+      `}</style>
+      <rect className="b p" x="8" y="12" width="56" height="32" />
+      <text x="22" y="32">Agent</text>
+      <rect className="b" x="76" y="12" width="56" height="32" />
+      <text x="92" y="32">MCP</text>
+      <path className="l" d="M64 28 L76 28" />
+    </svg>
+  );
+}
+
+/** WHY #1 — capabilities (trace lines) */
+export function CapabilitiesIcon({ className, title = "Enhanced capabilities" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .t{stroke:#94a3b8;stroke-width:1.6;fill:none}
+        .a{stroke:currentColor;stroke-width:2;fill:none;stroke-dasharray:40;stroke-dashoffset:40}
+        @media (prefers-reduced-motion:no-preference){ svg:hover .a{animation:d .5s ease forwards}}
+        @keyframes d{to{stroke-dashoffset:0}}
+      `}</style>
+      <path className="t" d="M8 24 H56"/>
+      <path className="t" d="M8 34 H56"/>
+      <path className="t" d="M8 44 H56"/>
+      <path className="a" d="M12 34 H40"/>
+    </svg>
+  );
+}
+
+/** WHY #2 — production-ready (shield + heartbeat) */
+export function ProductionIcon({ className, title = "Production ready" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .s{fill:none;stroke:#94a3b8;stroke-width:1.8}
+        .h{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        @media (prefers-reduced-motion:no-preference){ svg:hover .h{filter:brightness(1.1)} }
+      `}</style>
+      <path className="s" d="M32 8 L50 16 V32 C50 42 42 50 32 54 C22 50 14 42 14 32 V16 Z"/>
+      <path className="h" d="M18 32 H26 L30 26 L34 38 L38 32 H46"/>
+    </svg>
+  );
+}
+
+/** WHY #3 — integration (plug to port) */
+export function IntegrationIcon({ className, title = "Easy integration" }: IconProps) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label={title}>
+      <style>{`
+        .p{fill:none;stroke:#94a3b8;stroke-width:1.8;stroke-linecap:round}
+        .a{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-dasharray:36;stroke-dashoffset:36;transition:stroke-dashoffset .4s}
+        @media (prefers-reduced-motion:no-preference){ svg:hover .a{stroke-dashoffset:0} }
+      `}</style>
+      <path className="p" d="M22 24 v8 h6 v-8"/>
+      <path className="p" d="M42 24 v8 h-6 v-8"/>
+      <path className="a" d="M28 28 H36"/>
+    </svg>
+  );
+}
+
+# ================================================
+# FILE: src/components/icons/WhyMcp.tsx
+# ================================================
+
+// React import only needed for JSX transform
+type IconProps = { className?: string; title?: string };
+
+/** CONSISTENT STROKES ACROSS SCALES */
+const base = `
+  svg * { vector-effect: non-scaling-stroke; }
+  .muted { stroke:#94a3b8; }
+  .accent { stroke:currentColor; }
+`;
+
+/** 1) FAN-IN TO BUS — One protocol for many tools */
+export function FanInBusIcon({ className, title="One protocol" }: IconProps) {
+  return (
+    <svg viewBox="0 0 72 72" className={className} role="img" aria-label={title}>
+      <style>{`
+        ${base}
+        .m{fill:none;stroke-width:1.8}
+        .a{fill:none;stroke-width:2.2;stroke-linecap:round}
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .a{filter:brightness(1.12)}
+        }
+      `}</style>
+      {/* sockets */}
+      <path className="m muted" d="M10 18 h12 v10 h-12 z" />
+      <path className="m muted" d="M10 32 h12 v10 h-12 z" />
+      <path className="m muted" d="M10 46 h12 v10 h-12 z" />
+      {/* fan-in lines */}
+      <path className="a accent" d="M22 23 C30 26, 40 28, 50 34" />
+      <path className="a accent" d="M22 37 C32 38, 40 38, 50 38" />
+      <path className="a accent" d="M22 51 C30 48, 40 46, 50 40" />
+      {/* bus */}
+      <path className="a accent" d="M50 30 v16" />
+      <path className="m muted" d="M52 30 v16" />
+    </svg>
+  );
+}
+
+/** 2) SLIDING WINDOW — Live streaming context */
+export function SlidingWindowIcon({ className, title="Live context streaming" }: IconProps) {
+  return (
+    <svg viewBox="0 0 72 72" className={className} role="img" aria-label={title}>
+      <style>{`
+        ${base}
+        .m{fill:none;stroke-width:1.8}
+        .a{fill:none;stroke-width:2.2}
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .win{transform:translateX(6px)}
+        }
+        .win{transition:transform .35s ease}
+      `}</style>
+      {/* static frames */}
+      <rect className="m muted" x="8" y="20" width="18" height="12" rx="2"/>
+      <rect className="m muted" x="18" y="32" width="18" height="12" rx="2"/>
+      {/* sliding "current" window */}
+      <g className="win">
+        <rect className="a accent" x="30" y="24" width="24" height="18" rx="3"/>
+      </g>
+      {/* timeline */}
+      <path className="m muted" d="M10 52 H62" />
+      <path className="a accent" d="M30 52 H54" />
+    </svg>
+  );
+}
+
+/** 3) BRIDGE LINK — Model-to-tool last mile */
+export function BridgeLinkIcon({ className, title="Model–tool bridge" }: IconProps) {
+  return (
+    <svg viewBox="0 0 72 72" className={className} role="img" aria-label={title}>
+      <style>{`
+        ${base}
+        .m{fill:none;stroke-width:1.8}
+        .a{fill:none;stroke-width:2.2;stroke-linecap:round}
+        @media (prefers-reduced-motion:no-preference){
+          svg:hover .a{filter:brightness(1.12)}
+        }
+      `}</style>
+      {/* endpoints */}
+      <rect className="m muted" x="8" y="24" width="16" height="20" rx="3"/>
+      <rect className="m muted" x="48" y="24" width="16" height="20" rx="3"/>
+      {/* bridge */}
+      <path className="a accent" d="M24 34 C34 22, 38 22, 48 34" />
+      <path className="a accent" d="M24 34 C34 46, 38 46, 48 34" />
+    </svg>
+  );
+}
+
+# ================================================
+# FILE: src/components/LazyImage.tsx
+# ================================================
+
+import { useState, useRef, useEffect } from "react";
+
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  width?: number;
+  height?: number;
+}
+
+const LazyImage = ({ src, alt, className, width, height }: LazyImageProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={imgRef} className={className}>
+      {isInView && (
+        <img
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          loading="lazy"
+          onLoad={() => setIsLoaded(true)}
+          className={`transition-opacity duration-300 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      )}
+    </div>
+  );
+};
+
+export default LazyImage;
+
+# ================================================
+# FILE: src/components/McpVisualAnchors.tsx
+# ================================================
+
+// MCP Visual Anchors for Ocean-Fusion Particle System
+// These provide visual anchor points for the three Ocean framework components
+
+import React from 'react';
+
+const McpVisualAnchors: React.FC = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none z-0">
+      {/* Memory Anchor - Top Left */}
+      <div className="mcp-card memory absolute top-20 left-10 w-16 h-16 opacity-60">
+        <div className="w-full h-full rounded-lg border flex items-center justify-center" 
+             style={{ borderColor: 'var(--human-copper)', backgroundColor: 'color-mix(in oklab, var(--human-copper) 10%, transparent)' }}>
+          <div className="text-xs font-mono" style={{ color: 'var(--human-copper)' }}>MEM</div>
+        </div>
+      </div>
+      
+      {/* Cognition Anchor - Top Right */}
+      <div className="mcp-card cognition absolute top-20 right-10 w-16 h-16 opacity-60">
+        <div className="w-full h-full rounded-lg border flex items-center justify-center"
+             style={{ borderColor: 'var(--uv-ring)', backgroundColor: 'color-mix(in oklab, var(--uv-ring) 10%, transparent)' }}>
+          <div className="text-xs font-mono" style={{ color: 'var(--uv-ring)' }}>COG</div>
+        </div>
+      </div>
+      
+      {/* Waves Anchor - Bottom Center */}
+      <div className="mcp-card waves absolute bottom-20 left-1/2 transform -translate-x-1/2 w-20 h-12 opacity-60">
+        <div className="w-full h-full rounded-lg border flex items-center justify-center"
+             style={{ 
+               borderColor: 'var(--ai-ion)', 
+               background: 'linear-gradient(to right, color-mix(in oklab, var(--ai-ion) 10%, transparent), color-mix(in oklab, var(--human-copper) 10%, transparent))'
+             }}>
+          <div className="text-xs font-mono" style={{ color: 'var(--ai-ion)' }}>WAV</div>
+        </div>
+      </div>
+      
+      {/* Fusion Center - Central convergence point */}
+      <div className="fusion-point absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 opacity-40">
+        <div className="w-full h-full rounded-full border animate-pulse"
+             style={{ borderColor: 'var(--fusion)', backgroundColor: 'color-mix(in oklab, var(--fusion) 5%, transparent)' }}></div>
+      </div>
+    </div>
+  );
+};
+
+export default McpVisualAnchors;
+
+# ================================================
+# FILE: src/components/Navbar.tsx
+# ================================================
+
+import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "react-router-dom";
+
+const Navbar = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
+  return (
+    <nav className="nav w-full border-b border-border bg-background">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="text-xl font-semibold text-foreground hover:text-accent transition-colors brand">
+            LionAGI
+          </Link>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            <Link 
+              to="/projects" 
+              className={`text-sm hover:text-foreground transition-colors ${
+                location.pathname === "/projects" ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Projects
+            </Link>
+            <Link 
+              to="/mcp-tools" 
+              className={`text-sm hover:text-foreground transition-colors ${
+                location.pathname === "/mcp-tools" ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              MCP Tools
+            </Link>
+            <Link 
+              to="/booking" 
+              className={`text-sm hover:text-foreground transition-colors ${
+                location.pathname === "/booking" ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Booking
+            </Link>
+            {isHomePage ? (
+              <a href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </a>
+            ) : (
+              <Link to="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+# ================================================
+# FILE: src/components/Offers.tsx
+# ================================================
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const Offers = () => {
+  return (
+    <section id="pilot" className="max-w-7xl mx-auto px-6 py-20 border-t border-border" aria-label="Service Offerings">
+      <h2 className="sr-only">Service Offerings</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        {/* Production Debugging */}
+        <Card className="border border-border">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-foreground">
+              Agentic System Implementation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h4 className="text-base font-medium text-foreground mb-3">What We Build</h4>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Multi-agent coordination, orchestration patterns, and system architectures that handle complex workflows.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-base font-medium text-foreground mb-3">Observable Workflows</h4>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Make black-box AI reasoning transparent with decision trees, conversation analysis, and workflow pattern fixes.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-base font-medium text-foreground mb-3">Technical Analysis</h4>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                System architecture review, performance bottleneck identification, and intelligent workflow optimization.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-base font-medium text-foreground mb-3">What You Get</h4>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Working implementations, scalable architectures, and observable systems with clear decision paths.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Agent Debugging Sessions */}
+        <Card className="border border-border">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-foreground">
+              Consulting Sessions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <h4 className="text-base font-semibold text-foreground mb-2">Expert Review</h4>
+                <p className="text-base text-muted-foreground">15 min • $79</p>
+              </div>
+              <div>
+                <h4 className="text-base font-semibold text-foreground mb-2">Working Session</h4>
+                <p className="text-base text-muted-foreground">30 min • $159 ⭐</p>
+              </div>
+              <div>
+                <h4 className="text-base font-semibold text-foreground mb-2">Deep Dive</h4>
+                <p className="text-base text-muted-foreground">60 min • $249</p>
+              </div>
+              <div>
+                <h4 className="text-base font-semibold text-foreground mb-2">Full Exploration</h4>
+                <p className="text-base text-muted-foreground">105 min • $499</p>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-base font-medium text-foreground mb-3">What You Get</h4>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Practical guidance, implementation strategies, and concrete next steps for your agentic engineering initiatives.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
+export default Offers;
+
+# ================================================
+# FILE: src/components/ProblemSection.tsx
+# ================================================
+
+import { Card, CardContent } from "@/components/ui/card";
+
+const ProblemSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+          The AI Implementation Gap
+        </h2>
+        
+        <p className="text-xl text-muted-foreground mb-8">
+          <span className="text-foreground font-semibold">You know AI could transform your business.</span>
+          <br />
+          But you're stuck between:
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <Card className="gradient-card border-border/50">
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">
+                Consultants selling $500k "digital transformation" theater
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="gradient-card border-border/50">
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">
+                Engineers who speak in algorithms, not outcomes
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="gradient-card border-border/50">
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">
+                DIY tutorials that lead to broken prototypes
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <p className="text-2xl font-bold text-primary text-center">
+          Meanwhile, your competitors are shipping.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default ProblemSection;
+
+# ================================================
+# FILE: src/components/ProcessSection.tsx
+# ================================================
+
+const ProcessSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          From Zero to Autonomous in 6 Weeks
+        </h2>
+        <p className="text-lg text-muted-foreground mb-12">
+          A proven process that delivers working systems, not PowerPoints
+        </p>
+
+        <div className="space-y-6">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-20">
+              <span className="text-sm font-semibold text-primary">Week 1</span>
+            </div>
+            <div className="flex-grow">
+              <p className="text-lg text-foreground font-medium mb-1">
+                Map your workflow, identify automation points
+              </p>
+              <p className="text-muted-foreground">
+                We translate your business processes into clear technical requirements
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-20">
+              <span className="text-sm font-semibold text-primary">Week 2-3</span>
+            </div>
+            <div className="flex-grow">
+              <p className="text-lg text-foreground font-medium mb-1">
+                Build core agent logic and integrations
+              </p>
+              <p className="text-muted-foreground">
+                Creating the intelligence layer that makes decisions and takes actions
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-20">
+              <span className="text-sm font-semibold text-primary">Week 4</span>
+            </div>
+            <div className="flex-grow">
+              <p className="text-lg text-foreground font-medium mb-1">
+                Test with real data, refine decision trees
+              </p>
+              <p className="text-muted-foreground">
+                Validate the system with your actual workflows and edge cases
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-20">
+              <span className="text-sm font-semibold text-primary">Week 5</span>
+            </div>
+            <div className="flex-grow">
+              <p className="text-lg text-foreground font-medium mb-1">
+                Add monitoring, error handling, scale testing
+              </p>
+              <p className="text-muted-foreground">
+                Make it production-ready with observability and resilience
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-20">
+              <span className="text-sm font-semibold text-primary">Week 6</span>
+            </div>
+            <div className="flex-grow">
+              <p className="text-lg text-foreground font-medium mb-1">
+                Deploy, document, train your team
+              </p>
+              <p className="text-muted-foreground">
+                Go live with full handoff and your team ready to operate it
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProcessSection;
+
+# ================================================
+# FILE: src/components/ProjectHighlights.tsx
+# ================================================
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ArrowRight, Github, BookOpen } from "lucide-react";
+
+const ProjectHighlights = () => {
+  return (
+    <section id="projects" className="max-w-7xl mx-auto px-6 py-20 border-t border-border/30">
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold text-foreground mb-4">
+          Prior work
+        </h2>
+        <p className="text-muted-foreground max-w-2xl">
+          Frameworks I built—patterns I'll apply in sessions.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-5">
+        {/* LionAGI Card - Primary (7/12) */}
+        <Card className="gradient-card hover:energy-glow/50 transition-all duration-300 relative lg:col-span-7 border border-border before:absolute before:-left-px before:-right-px before:-top-px before:h-1 before:bg-primary before:rounded-t-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold text-foreground">LionAGI</CardTitle>
+            <CardDescription>
+              Orchestration patterns with tracing and failure guardrails.<br />
+              <strong>40+</strong> notebooks you can reuse in real flows.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex gap-2 flex-wrap mt-2 mb-3">
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">Patterns: 40+</span>
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">Orchestration</span>
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">Python</span>
+              </div>
+              <div className="text-slate-400 text-sm">
+                <a
+                  href="https://github.com/khive-ai/lionagi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-slate-300 transition-colors"
+                  aria-label="LionAGI GitHub repository"
+                >
+                  GitHub
+                </a>
+                {' • '}
+                <a
+                  href="https://khive-ai.github.io/lionagi/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-slate-300 transition-colors"
+                  aria-label="LionAGI documentation"
+                >
+                  Docs
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pydapter Card (5/12) */}
+        <Card className="gradient-card hover:energy-glow/50 transition-all duration-300 lg:col-span-5 border border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold text-foreground">Pydapter</CardTitle>
+            <CardDescription>
+              Async-first data adapters and migration utilities.<br />
+              One API across <strong>Postgres/MySQL/SQLite</strong> with safe sync fallbacks.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex gap-2 flex-wrap mt-2 mb-3">
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">DBs: PG/MySQL/SQLite</span>
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">Async-first</span>
+                <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded font-medium">Migrations</span>
+              </div>
+              <div className="text-slate-400 text-sm">
+                <a
+                  href="https://github.com/lionagi/pydapter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-slate-300 transition-colors"
+                  aria-label="Pydapter GitHub repository"
+                >
+                  GitHub
+                </a>
+                {' • '}
+                <a
+                  href="https://pydapter.readthedocs.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-slate-300 transition-colors"
+                  aria-label="Pydapter documentation"
+                >
+                  Docs
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mb-5">
+        <p className="text-sm text-slate-400 max-w-[65ch]">These frameworks encode the patterns I apply in sessions. Adoption optional.</p>
+      </div>
+
+      <div className="border-t border-border/30 pt-4">
+        <Link to="/projects" className="inline-block">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground group">
+            View All Projects
+            <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+          </Button>
+        </Link>
+      </div>
+    </section>
+  );
+};
+
+export default ProjectHighlights;
+
+# ================================================
+# FILE: src/components/Projects.tsx
+# ================================================
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExternalLink, Github } from "lucide-react";
+
+const Projects = () => {
+  const projects = [
+    {
+      title: "LionAGI",
+      description: "Agent orchestration framework with observable workflows and formal verification",
+      tags: ["Python", "Multi-Agent", "Async", "Orchestration"],
+      github: "https://github.com/khive-ai/lionagi",
+      docs: "https://khive-ai.github.io/lionagi/",
+      features: ["40+ Jupyter notebooks", "Role + domain composition", "Observable decision trees"]
+    },
+    {
+      title: "Pydapter", 
+      description: "Universal data connection layer with async-first design and migration utilities",
+      tags: ["Python", "Data", "Async", "Migration"],
+      github: "https://github.com/lionagi/pydapter",
+      docs: "https://pydapter.readthedocs.io/",
+      features: ["Database adapters", "Model migrations", "Extensive format support"]
+    }
+  ];
+
+  return (
+    <section id="projects" className="max-w-7xl mx-auto px-6 py-20 border-t border-border">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            Open Source Projects
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Production-ready frameworks for multi-agent systems and data orchestration, 
+            built with extensive documentation and real-world examples.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {projects.map((project, index) => (
+            <Card key={index} className="border border-border hover:shadow-md transition-all duration-200 hover:border-accent/30 h-full">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <CardTitle className="text-lg font-semibold text-foreground">
+                    {project.title}
+                  </CardTitle>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <a 
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-accent transition-colors p-1"
+                      title="View on GitHub"
+                    >
+                      <Github className="h-4 w-4" />
+                    </a>
+                    <a 
+                      href={project.docs}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-accent transition-colors p-1"
+                      title="View Documentation"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 flex-1">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {project.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tags.map(tag => (
+                    <span 
+                      key={tag}
+                      className="text-xs px-2.5 py-1 bg-muted/60 text-muted-foreground rounded-md font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="border-t border-border/50 pt-3 mt-auto">
+                  <ul className="space-y-1.5">
+                    {project.features.map((feature, idx) => (
+                      <li key={idx} className="text-xs text-muted-foreground flex items-start">
+                        <span className="text-accent mr-2 mt-1 text-xs">•</span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Projects;
+
+# ================================================
+# FILE: src/components/ProofCards.tsx
+# ================================================
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExternalLink } from "lucide-react";
+import LazyImage from "@/components/LazyImage";
+
+const ProofCards = () => {
+  const proofs = [
+    {
+      title: "LionAGI Framework",
+      description: "Open source agent orchestration framework",
+      link: "https://github.com/khive-ai/lionagi",
+      external: true,
+      thumbnail: "/spec-thumb.svg",
+      alt: "LionAGI repository"
+    },
+    {
+      title: "Patterns & Examples", 
+      description: "Notebooks and tutorials for multi-agent patterns",
+      link: "https://github.com/khive-ai/lionagi/tree/main/notebooks",
+      external: true,
+      thumbnail: "/diff-thumb.svg",
+      alt: "Code examples and tutorials"
+    },
+    {
+      title: "Book a Session",
+      description: "Get expert help with your agent systems",
+      link: "https://calendly.com/ocean-lionagi",
+      external: true,
+      thumbnail: "/metrics-thumb.svg",
+      alt: "Schedule consultation"
+    }
+  ];
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16" aria-label="Proof of Concept Artifacts">
+      <h2 className="sr-only">Proof Artifacts</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {proofs.map((proof, index) => (
+          <Card key={index} className="gradient-card hover:energy-glow/50 transition-all duration-300 group cursor-pointer">
+            <a href={proof.link} target={proof.external ? "_blank" : "_self"} rel={proof.external ? "noopener noreferrer" : ""} className={`block h-full ${proof.external ? "ext" : "link"}`}>
+              <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                <LazyImage 
+                  src={proof.thumbnail} 
+                  alt={proof.alt}
+                  className="w-full h-full object-cover"
+                  width={640}
+                  height={360}
+                />
+              </div>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium text-foreground flex items-center justify-between">
+                  {proof.title}
+                  {proof.external && <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {proof.description}
+                </p>
+              </CardContent>
+            </a>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default ProofCards;
+
+# ================================================
+# FILE: src/components/ProofSection.tsx
+# ================================================
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const ProofSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30">
+      <div className="mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          Systems in the Wild
+        </h2>
+        <p className="text-lg text-muted-foreground">
+          Real systems, real production, real results
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8">
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-foreground">
+              Trading Intelligence Platform
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2 text-muted-foreground">
+              <li>• Manages 200+ micro-strategies simultaneously</li>
+              <li>• Processes 10,000+ signals daily</li>
+            </ul>
+            <div className="pt-3 border-t border-border/30">
+              <p className="text-lg font-semibold text-primary">
+                Result: 73% reduction in manual analysis time
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-foreground">
+              Recruiting Acceleration System
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2 text-muted-foreground">
+              <li>• Screens 500+ candidates per day</li>
+              <li>• Generates structured comparative reports</li>
+            </ul>
+            <div className="pt-3 border-t border-border/30">
+              <p className="text-lg font-semibold text-primary">
+                Result: 5 hours → 20 minutes per hiring round
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-foreground">
+              Compliance Automation Suite
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2 text-muted-foreground">
+              <li>• Processes regulatory documents with full audit trail</li>
+              <li>• 99.7% accuracy on classification tasks</li>
+            </ul>
+            <div className="pt-3 border-t border-border/30">
+              <p className="text-lg font-semibold text-primary">
+                Result: $400K annual savings on compliance overhead
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-foreground">
+              Content Intelligence Engine
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2 text-muted-foreground">
+              <li>• Researches, drafts, and optimizes content at scale</li>
+              <li>• Maintains brand voice across 50+ content types</li>
+            </ul>
+            <div className="pt-3 border-t border-border/30">
+              <p className="text-lg font-semibold text-primary">
+                Result: 12x content output, 2x engagement rates
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
+export default ProofSection;
+
+# ================================================
+# FILE: src/components/QualificationSection.tsx
+# ================================================
+
+import { Check, X } from "lucide-react";
+
+const QualificationSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-center">
+          Who This Is For
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-12">
+          {/* Perfect Fit */}
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
+              <Check className="h-6 w-6 text-primary" />
+              Perfect Fit If You're:
+            </h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  <span className="font-semibold text-foreground">A founder</span> who needs to move fast but can't afford a full AI team
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  <span className="font-semibold text-foreground">An operator</span> drowning in workflows that should be automated
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  <span className="font-semibold text-foreground">A team lead</span> who sees the AI opportunity but needs execution help
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  <span className="font-semibold text-foreground">Not technical</span> but understand the strategic value of AI
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Not a Fit */}
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
+              <X className="h-6 w-6 text-muted-foreground" />
+              Not a Fit If:
+            </h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  You want magic AI that "figures everything out"
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  You're looking for basic chatbot integration
+                </p>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-muted-foreground">
+                  You need someone to convince you AI is valuable
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default QualificationSection;
+
+# ================================================
+# FILE: src/components/SavingsCards.tsx
+# ================================================
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Clock, DollarSign, TrendingUp, FileText, Users, MessageCircle } from "lucide-react";
+
+interface SavingsData {
+  icon: React.ComponentType<any>;
+  title: string;
+  manualTime: string;
+  automatedTime: string;
+  annualSavings: string;
+  description: string;
+}
+
+const savingsData: SavingsData[] = [
+  {
+    icon: FileText,
+    title: "Invoice Processing",
+    manualTime: "45 min",
+    automatedTime: "2 min",
+    annualSavings: "$180K",
+    description: "Extract data, validate, route approvals, update systems"
+  },
+  {
+    icon: Users,
+    title: "Resume Screening",
+    manualTime: "3 hours",
+    automatedTime: "8 min",
+    annualSavings: "$320K",
+    description: "Analyze qualifications, score fit, generate comparisons"
+  },
+  {
+    icon: MessageCircle,
+    title: "Customer Feedback Analysis",
+    manualTime: "2 hours",
+    automatedTime: "5 min",
+    annualSavings: "$240K",
+    description: "Categorize sentiment, extract insights, prioritize actions"
+  }
+];
+
+const SavingsCards = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          Real Savings, Real Results
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          See the actual time and cost savings our automated systems deliver in production
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        {savingsData.map((item, index) => {
+          const Icon = item.icon;
+          
+          return (
+            <Card 
+              key={index} 
+              className="gradient-card hover:energy-glow/30 transition-all duration-500 group relative overflow-hidden"
+            >
+              {/* Console-style card header */}
+              <div className="terminal-header bg-surface/50 border-b border-console-green/30">
+                <div className="terminal-dot terminal-dot--red"></div>
+                <div className="terminal-dot terminal-dot--amber"></div>
+                <div className="terminal-dot terminal-dot--green"></div>
+                <span className="font-mono text-xs text-console-green ml-2">process.{item.title.toLowerCase().replace(/\s+/g, '-')}</span>
+              </div>
+
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 rounded-lg bg-console-green/10 border border-console-green/20">
+                    <Icon className="h-6 w-6 text-console-green" />
+                  </div>
+                  {item.title}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Manual vs Automated Comparison */}
+                <div className="space-y-4">
+                  {/* Manual Process */}
+                  <div className="flex items-center justify-between p-3 bg-console-red/10 border border-console-red/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-console-red" />
+                      <span className="font-mono text-sm text-muted-foreground">Manual</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono text-lg font-bold text-console-red">
+                        {item.manualTime}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Automation Arrow */}
+                  <div className="flex justify-center">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-console-cyan/10 border border-console-cyan/30 rounded-full">
+                      <TrendingUp className="h-4 w-4 text-console-cyan" />
+                      <span className="font-mono text-xs text-console-cyan">AUTOMATED</span>
+                    </div>
+                  </div>
+
+                  {/* Automated Process */}
+                  <div className="flex items-center justify-between p-3 bg-console-green/10 border border-console-green/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-console-green" />
+                      <span className="font-mono text-sm text-muted-foreground">AI System</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono text-lg font-bold text-console-green">
+                        {item.automatedTime}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Annual Savings */}
+                <div className="pt-4 border-t border-border/30">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-console-amber" />
+                      <span className="text-sm text-muted-foreground">Annual Savings</span>
+                    </div>
+                    <div className="font-mono text-xl font-bold text-console-amber neon-glow">
+                      {item.annualSavings}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-console-cyan/5 via-transparent to-console-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Bottom Summary */}
+      <div className="mt-12 text-center">
+        <div className="inline-flex items-center gap-3 px-6 py-3 bg-console-green/10 border border-console-green/30 rounded-full">
+          <div className="status-indicator status-indicator--online"></div>
+          <span className="font-mono text-sm text-console-green">TOTAL ANNUAL SAVINGS</span>
+          <span className="font-mono text-xl font-bold text-console-green neon-glow">
+            $740K+
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default SavingsCards;
+
+# ================================================
+# FILE: src/components/ScrollToHashEffect.tsx
+# ================================================
+
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+export function ScrollToHashEffect() {
+  const { hash } = useLocation();
+  
+  useEffect(() => {
+    if (!hash) return;
+    
+    const id = hash.replace("#", "");
+    const element = document.getElementById(id);
+    
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: "smooth", 
+        block: "start" 
+      });
+    }
+  }, [hash]);
+  
+  return null;
+}
+
+# ================================================
+# FILE: src/components/ServicesSection.tsx
+# ================================================
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Zap, Target, Rocket } from "lucide-react";
+
+const ServicesSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border/30">
+      <div className="mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          Three Ways We Work Together
+        </h2>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Rocket className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Rapid Prototype → Production</CardTitle>
+            </div>
+            <CardDescription className="text-base">
+              6-8 weeks from concept to live system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>We map your workflow in plain English</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>I build the autonomous system</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>You own everything, documentation included</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Target className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Strategic Implementation</CardTitle>
+            </div>
+            <CardDescription className="text-base">
+              Advisory + hands-on building
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Identify your highest-leverage AI opportunities</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Co-build the first system together</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Train your team to maintain and expand it</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className="gradient-card hover:energy-glow/30 transition-all duration-300">
+          <CardHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Zap className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Rescue & Scale</CardTitle>
+            </div>
+            <CardDescription className="text-base">
+              Fix what's broken, make it enterprise-ready
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Audit your existing AI experiments</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Transform prototypes into production systems</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>Add monitoring, failsafes, and audit trails</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
+export default ServicesSection;
+
+# ================================================
+# FILE: src/components/SkipLink.tsx
+# ================================================
+
+const SkipLink = () => {
+  return (
+    <a 
+      href="#main-content" 
+      className="skip-to-content"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const mainContent = document.getElementById('main-content');
+          if (mainContent) {
+            mainContent.focus();
+          }
+        }
+      }}
+    >
+      Skip to main content
+    </a>
+  );
+};
+
+export default SkipLink;
+
+# ================================================
+# FILE: src/components/SolutionSection.tsx
+# ================================================
+
+const SolutionSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+          I Bridge the Gap
+        </h2>
+        
+        <p className="text-xl text-muted-foreground mb-8">
+          I'm an <span className="text-foreground font-semibold">Agentic Systems Architect</span>. 
+          I build the connective tissue between AI's promise and your reality.
+        </p>
+
+        <div className="mb-12">
+          <h3 className="text-lg font-semibold text-foreground mb-6">What that means:</h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <p className="text-lg text-muted-foreground">
+                Your workflows run themselves while you sleep
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <p className="text-lg text-muted-foreground">
+                Complex decisions happen in seconds, not days
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <p className="text-lg text-muted-foreground">
+                Your team gets 10x leverage without 10x headcount
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-lg font-semibold text-foreground text-center">
+          No black boxes. No vendor lock-in. Just systems that work.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default SolutionSection;
+
+# ================================================
+# FILE: src/components/WireBust.tsx
+# ================================================
+
+// src/components/WireBust.tsx
+// Ocean-Fusion Wire-Bust Cameo Component
+// Stylized geometric representation with particle anchor
+
+import React from 'react';
+
+interface WireBustProps {
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+  animated?: boolean;
+}
+
+const WireBust: React.FC<WireBustProps> = ({ 
+  className = '', 
+  size = 'md',
+  animated = true 
+}) => {
+  const dimensions = {
+    sm: { width: 240, height: 300, viewBox: '0 0 240 300' },
+    md: { width: 320, height: 400, viewBox: '0 0 320 400' },
+    lg: { width: 400, height: 500, viewBox: '0 0 400 500' }
+  };
+
+  const { width, height, viewBox } = dimensions[size];
+
+  return (
+    <div className={`wire-bust-container ${className}`}>
+      <svg 
+        className={`bust ${animated ? 'halo' : ''}`}
+        width={width}
+        height={height}
+        viewBox={viewBox} 
+        aria-label="Ocean digital representation"
+        role="img"
+      >
+        <defs>
+          {/* UV Halo Gradient */}
+          <radialGradient id="halo-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="transparent"/>
+            <stop offset="60%" stopColor="var(--uv-ring)" stopOpacity="0.2"/>
+            <stop offset="100%" stopColor="var(--uv-ring)" stopOpacity="0.4"/>
+          </radialGradient>
+          
+          {/* Copper Stroke Gradient */}
+          <linearGradient id="copper-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--human-copper)" stopOpacity="0.8"/>
+            <stop offset="50%" stopColor="var(--human-copper)" stopOpacity="1"/>
+            <stop offset="100%" stopColor="var(--human-copper)" stopOpacity="0.8"/>
+          </linearGradient>
+          
+          {/* Console Green Accent */}
+          <linearGradient id="console-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--console-green)" stopOpacity="0.3"/>
+            <stop offset="50%" stopColor="var(--console-cyan)" stopOpacity="0.5"/>
+            <stop offset="100%" stopColor="var(--console-green)" stopOpacity="0.3"/>
+          </linearGradient>
+        </defs>
+
+        {/* Halo Ring - rotates slowly */}
+        {animated && (
+          <circle 
+            cx={width/2} 
+            cy={height/2.2} 
+            r={width * 0.45} 
+            fill="url(#halo-gradient)" 
+            className="halo-ring"
+            style={{
+              animation: 'rotate-halo 28s linear infinite'
+            }}
+          />
+        )}
+
+        {/* Main Bust Silhouette - Geometric Head and Shoulders */}
+        <g id="bust-silhouette">
+          {/* Head - Pentagon-like shape */}
+          <path
+            d={`M${width/2} ${height*0.25}
+                L${width*0.7} ${height*0.35}
+                L${width*0.75} ${height*0.55}
+                L${width*0.65} ${height*0.65}
+                L${width*0.35} ${height*0.65}
+                L${width*0.25} ${height*0.55}
+                L${width*0.3} ${height*0.35}
+                Z`}
+            fill="none"
+            stroke="url(#copper-stroke)"
+            strokeWidth="1.8"
+            className="bust-head"
+          />
+          
+          {/* Shoulders - Broader geometric base */}
+          <path
+            d={`M${width*0.35} ${height*0.65}
+                L${width*0.15} ${height*0.75}
+                L${width*0.1} ${height*0.85}
+                L${width*0.9} ${height*0.85}
+                L${width*0.85} ${height*0.75}
+                L${width*0.65} ${height*0.65}`}
+            fill="none"
+            stroke="url(#copper-stroke)"
+            strokeWidth="1.8"
+            className="bust-shoulders"
+          />
+          
+          {/* Geometric Facets - Triangular details */}
+          <g className="facets" opacity="0.24">
+            <path
+              d={`M${width*0.4} ${height*0.4}
+                  L${width*0.5} ${height*0.35}
+                  L${width*0.45} ${height*0.5}
+                  Z`}
+              stroke="url(#copper-stroke)"
+              strokeWidth="1"
+              fill="none"
+            />
+            <path
+              d={`M${width*0.6} ${height*0.4}
+                  L${width*0.5} ${height*0.35}
+                  L${width*0.55} ${height*0.5}
+                  Z`}
+              stroke="url(#copper-stroke)"
+              strokeWidth="1"
+              fill="none"
+            />
+            <path
+              d={`M${width*0.45} ${height*0.7}
+                  L${width*0.55} ${height*0.7}
+                  L${width*0.5} ${height*0.75}
+                  Z`}
+              stroke="url(#copper-stroke)"
+              strokeWidth="1"
+              fill="none"
+            />
+          </g>
+          
+          {/* Console Grid Overlay - subtle tech aesthetic */}
+          <g className="console-overlay" opacity="0.15">
+            {/* Horizontal lines */}
+            {[0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6].map((y, i) => (
+              <line
+                key={`h-${i}`}
+                x1={width*0.3}
+                y1={height*y}
+                x2={width*0.7}
+                y2={height*y}
+                stroke="var(--console-green)"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+            ))}
+            {/* Vertical lines */}
+            {[0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65].map((x, i) => (
+              <line
+                key={`v-${i}`}
+                x1={width*x}
+                y1={height*0.3}
+                x2={width*x}
+                y2={height*0.65}
+                stroke="var(--console-cyan)"
+                strokeWidth="0.5"
+                opacity="0.2"
+              />
+            ))}
+          </g>
+        </g>
+
+        {/* Particle Flow Hints - Subtle indicators */}
+        <g className="flow-hints" opacity="0.4">
+          {/* Flow lines emanating from bust */}
+          <path
+            d={`M${width*0.25} ${height*0.5} Q${width*0.1} ${height*0.4} ${width*0.05} ${height*0.3}`}
+            stroke="var(--ai-ion)"
+            strokeWidth="1"
+            fill="none"
+            opacity="0.3"
+            className="flow-line"
+          />
+          <path
+            d={`M${width*0.75} ${height*0.5} Q${width*0.9} ${height*0.4} ${width*0.95} ${height*0.3}`}
+            stroke="var(--ai-ion)"
+            strokeWidth="1"
+            fill="none"
+            opacity="0.3"
+            className="flow-line"
+          />
+        </g>
+      </svg>
+      
+      {/* Console Status Indicator */}
+      <div className="console-status">
+        <div className="status-indicator status-indicator--online"></div>
+        <span className="font-mono text-sm text-console-green">SYSTEM ACTIVE</span>
+      </div>
+    </div>
+  );
+};
+
+export default WireBust;
+
+# ================================================
+# FILE: src/hooks/use-mobile.tsx
+# ================================================
+
+import * as React from "react"
+
+const MOBILE_BREAKPOINT = 768
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
+}
+
+
+# ================================================
+# FILE: src/hooks/use-toast.ts
+# ================================================
+
+import * as React from "react"
+
+import type {
+  ToastActionElement,
+  ToastProps,
+} from "@/components/ui/toast"
+
+const TOAST_LIMIT = 1
+const TOAST_REMOVE_DELAY = 1000000
+
+type ToasterToast = ToastProps & {
+  id: string
+  title?: React.ReactNode
+  description?: React.ReactNode
+  action?: ToastActionElement
+}
+
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const
+
+let count = 0
+
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER
+  return count.toString()
+}
+
+type ActionType = typeof actionTypes
+
+type Action =
+  | {
+      type: ActionType["ADD_TOAST"]
+      toast: ToasterToast
+    }
+  | {
+      type: ActionType["UPDATE_TOAST"]
+      toast: Partial<ToasterToast>
+    }
+  | {
+      type: ActionType["DISMISS_TOAST"]
+      toastId?: ToasterToast["id"]
+    }
+  | {
+      type: ActionType["REMOVE_TOAST"]
+      toastId?: ToasterToast["id"]
+    }
+
+interface State {
+  toasts: ToasterToast[]
+}
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) {
+    return
+  }
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId)
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId: toastId,
+    })
+  }, TOAST_REMOVE_DELAY)
+
+  toastTimeouts.set(toastId, timeout)
+}
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      }
+
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
+        ),
+      }
+
+    case "DISMISS_TOAST": {
+      const { toastId } = action
+
+      // ! Side effects ! - This could be extracted into a dismissToast() action,
+      // but I'll keep it here for simplicity
+      if (toastId) {
+        addToRemoveQueue(toastId)
+      } else {
+        state.toasts.forEach((toast) => {
+          addToRemoveQueue(toast.id)
+        })
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? {
+                ...t,
+                open: false,
+              }
+            : t
+        ),
+      }
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === undefined) {
+        return {
+          ...state,
+          toasts: [],
+        }
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      }
+  }
+}
+
+const listeners: Array<(state: State) => void> = []
+
+let memoryState: State = { toasts: [] }
+
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action)
+  listeners.forEach((listener) => {
+    listener(memoryState)
+  })
+}
+
+type Toast = Omit<ToasterToast, "id">
+
+function toast({ ...props }: Toast) {
+  const id = genId()
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    })
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  }
+}
+
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState)
+
+  React.useEffect(() => {
+    listeners.push(setState)
+    return () => {
+      const index = listeners.indexOf(setState)
+      if (index > -1) {
+        listeners.splice(index, 1)
+      }
+    }
+  }, [state])
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+  }
+}
+
+export { useToast, toast }
+
+
+# ================================================
+# FILE: src/hooks/useOceanFusion.ts
+# ================================================
+
+import { useEffect, useRef, useState } from 'react';
+import { initOceanFusionParticles, setupParticleAnchors, setupParticleModes } from '../particles/init';
+import type { FusionParticles } from '../particles/FusionParticles';
+
+interface UseOceanFusionOptions {
+  theme?: 'ocean-fusion' | 'console-enhanced' | 'debug';
+  performance?: 'high' | 'balanced' | 'low';
+  enableAutoModes?: boolean;
+  disabled?: boolean;
+}
+
+interface UseOceanFusionReturn {
+  engine: FusionParticles | null;
+  isLoaded: boolean;
+  error: string | null;
+}
+
+/**
+ * Custom hook for managing Ocean-Fusion particle system lifecycle
+ * Handles initialization, cleanup, and error states
+ */
+export function useOceanFusion(options: UseOceanFusionOptions = {}): UseOceanFusionReturn {
+  const {
+    theme = 'console-enhanced',
+    performance = 'balanced', 
+    enableAutoModes = true,
+    disabled = false
+  } = options;
+
+  const [engine, setEngine] = useState<FusionParticles | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const initAttempted = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    // Skip if disabled or already attempted
+    if (disabled || initAttempted.current) return;
+    
+    initAttempted.current = true;
+
+    const initParticles = async () => {
+      try {
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+          console.log('Ocean-Fusion: Skipping particles due to reduced motion preference');
+          setIsLoaded(true);
+          return;
+        }
+
+        // Check for WebGL support
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          throw new Error('WebGL not supported');
+        }
+
+        // Add theme attribute to html element
+        document.documentElement.setAttribute('data-theme', 'ocean-fusion');
+
+        // Initialize particle system
+        const particleEngine = initOceanFusionParticles({
+          theme,
+          performance,
+          reducedMotion: prefersReducedMotion
+        });
+
+        if (!particleEngine) {
+          throw new Error('Failed to initialize particle engine');
+        }
+
+        // Start the particle engine
+        particleEngine.start();
+        
+        // Setup particle anchors and modes if enabled
+        if (enableAutoModes) {
+          // Delay to ensure React components are rendered
+          setTimeout(() => {
+            setupParticleAnchors(particleEngine);
+            setupParticleModes(particleEngine);
+          }, 200);
+        }
+        
+        // Particle engine is ready
+        console.log('Ocean-Fusion: Particle engine initialized and started successfully');
+
+        // Store cleanup function
+        cleanupRef.current = () => {
+          // Stop and cleanup particle engine
+          if (particleEngine) {
+            if (typeof particleEngine.stop === 'function') {
+              particleEngine.stop();
+            }
+            if (typeof particleEngine.destroy === 'function') {
+              particleEngine.destroy();
+            }
+          }
+          
+          // Remove canvas if it exists
+          const canvas = document.getElementById('fusion-canvas');
+          if (canvas) {
+            canvas.remove();
+          }
+          
+          // Remove theme attribute
+          document.documentElement.removeAttribute('data-theme');
+          
+          // Clean up window reference
+          if (typeof window !== 'undefined') {
+            delete (window as any).fusionEngine;
+          }
+        };
+
+        // Expose to window for debugging
+        if (typeof window !== 'undefined') {
+          (window as any).fusionEngine = particleEngine;
+        }
+        
+        // Update state
+        setEngine(particleEngine);
+        setIsLoaded(true);
+        console.log('Ocean-Fusion particles initialized successfully');
+        
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error initializing particles';
+        console.warn('Ocean-Fusion initialization failed:', errorMessage);
+        setError(errorMessage);
+        setIsLoaded(true); // Still mark as loaded to prevent retries
+      }
+    };
+
+    // Initialize after a brief delay to ensure React has finished hydration
+    const initDelay = setTimeout(initParticles, 100);
+
+    return () => {
+      clearTimeout(initDelay);
+    };
+  }, [theme, performance, enableAutoModes, disabled]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+        cleanupRef.current = null;
+      }
+    };
+  }, []);
+
+  return {
+    engine,
+    isLoaded,
+    error
+  };
+}
+
+/**
+ * Simple hook for basic Ocean-Fusion initialization with console theme
+ */
+export function useOceanFusionConsole(disabled?: boolean) {
+  return useOceanFusion({
+    theme: 'console-enhanced',
+    performance: 'balanced',
+    enableAutoModes: true,
+    disabled
+  });
+}
+
+# ================================================
+# FILE: src/index.css
+# ================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ocean-Fusion Design System + Console Aesthetic */
+
+@layer base {
+  :root[data-theme="ocean-fusion"] {
+    /* === OCEAN-FUSION OKLCH COLOR SYSTEM === */
+    
+    /* Graphite neutrals */
+    --bg-0: oklch(20% 0.02 260);
+    --bg-1: oklch(24% 0.02 260);
+    --surface: oklch(28% 0.02 260);
+    --line: color-mix(in oklab, white 12%, transparent);
+    --text: oklch(95% 0.02 250);
+    --muted: oklch(78% 0.03 250);
+
+    /* Brand axes - Ocean-Fusion core */
+    --human-copper: oklch(75% 0.16 60);    /* mineral copper */
+    --ai-ion: oklch(80% 0.15 210);         /* ion cyan */
+    --uv-ring: oklch(70% 0.17 280);        /* ultraviolet highlight */
+    --fusion: oklch(98% 0.01 250);         /* soft white */
+
+    /* Console accents - neon terminal vibes */
+    --console-green: oklch(85% 0.20 145);  /* terminal green */
+    --console-cyan: oklch(82% 0.18 195);   /* bright cyan */
+    --console-amber: oklch(82% 0.15 85);   /* warning amber */
+    --console-red: oklch(70% 0.20 20);     /* error red */
+
+    /* States */
+    --success: oklch(78% 0.13 150);
+    --warn: oklch(82% 0.12 90);
+    --danger: oklch(70% 0.20 20);
+
+    /* Product accents */
+    --mem: var(--human-copper);
+    --cog: var(--uv-ring);
+    --wav: linear-gradient(120deg, var(--ai-ion), var(--human-copper));
+
+    /* === SHADCN/UI COMPATIBILITY === */
+    --background: 20% 0.02 260;           /* --bg-0 in HSL equiv */
+    --foreground: 95% 0.02 250;           /* --text */
+    
+    --card: 28% 0.02 260;                 /* --surface */
+    --card-foreground: 95% 0.02 250;
+    
+    --popover: 28% 0.02 260;
+    --popover-foreground: 95% 0.02 250;
+    
+    --primary: 80% 0.15 210;              /* --ai-ion */
+    --primary-foreground: 20% 0.02 260;
+    
+    --secondary: 24% 0.02 260;            /* --bg-1 */
+    --secondary-foreground: 78% 0.03 250;
+    
+    --muted: 24% 0.02 260;
+    --muted-foreground: 78% 0.03 250;
+    
+    --accent: 70% 0.17 280;               /* --uv-ring */
+    --accent-foreground: 20% 0.02 260;
+    
+    --destructive: 70% 0.20 20;           /* --danger */
+    --destructive-foreground: 95% 0.02 250;
+    
+    --border: color-mix(in oklab, white 12%, transparent);  /* --line */
+    --input: 28% 0.02 260;                /* --surface */
+    --ring: 80% 0.15 210;                 /* --ai-ion */
+
+    /* Design tokens */
+    --radius: 8px;
+    
+    /* Typography scale - Minor third */
+    --text-xs: 0.75rem;   /* 12px */
+    --text-sm: 0.875rem;  /* 14px */
+    --text-base: 1rem;    /* 16px */
+    --text-lg: 1.25rem;   /* 20px */
+    --text-xl: 1.75rem;   /* 28px */
+    --text-2xl: 2.5rem;   /* 40px */
+    --text-3xl: 2.75rem;  /* 44px - h1 */
+    --text-4xl: 2.125rem; /* 34px - h2 */
+    
+    /* Spacing scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+
+    /* Elevation - Soft shadows */
+    --shadow-sm: 0 2px 4px color-mix(in oklab, black 20%, transparent);
+    --shadow-md: 0 4px 8px color-mix(in oklab, black 15%, transparent);
+    --shadow-lg: 0 8px 16px color-mix(in oklab, black 12%, transparent);
+    --shadow-glow: 0 0 20px color-mix(in oklab, var(--ai-ion) 15%, transparent);
+  }
+
+  /* === BASE STYLES === */
+  html {
+    background: var(--bg-0);
+    color: var(--text);
+  }
+  
+  body {
+    background: var(--bg-0);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* === CONTAINER SYSTEM === */
+  .container {
+    width: min(100%, 1200px);
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding-inline: 16px;
+    }
+  }
+
+  /* === CORE COMPONENTS === */
+  
+  /* Cards - Ocean-Fusion style */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--ai-ion) 40%, transparent);
+    box-shadow: 0 10px 32px color-mix(in oklab, var(--ai-ion) 16%, transparent);
+  }
+
+  /* Buttons - Ocean-Fusion with specular sweep */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    background: var(--ai-ion);
+    color: var(--bg-0);
+    border-radius: 12px;
+    padding: 0.7rem 1.1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn:hover {
+    transform: scale(1.02);
+  }
+  
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: -20% -40%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: translateX(-120%);
+    filter: blur(2px);
+  }
+  
+  .btn:hover::after {
+    animation: sweep 0.6s ease;
+  }
+  
+  @keyframes sweep {
+    to { transform: translateX(120%); }
+  }
+
+  .btn--outline {
+    background: transparent;
+    border: 1px solid var(--human-copper);
+    color: var(--human-copper);
+  }
+
+  .btn--console {
+    background: var(--console-green);
+    color: var(--bg-0);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  /* === CONSOLE-INSPIRED ELEMENTS === */
+  
+  /* Terminal styling */
+  .terminal {
+    background: var(--bg-1);
+    border: 1px solid var(--console-green);
+    border-radius: 4px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  .terminal-dot--red { background: var(--console-red); }
+  .terminal-dot--amber { background: var(--console-amber); }
+  .terminal-dot--green { background: var(--console-green); }
+
+  /* Neon glow effects */
+  .neon-glow {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+  
+  .neon-border {
+    border: 1px solid var(--console-cyan);
+    box-shadow: 
+      0 0 5px var(--console-cyan),
+      inset 0 0 5px color-mix(in oklab, var(--console-cyan) 20%, transparent);
+  }
+
+  /* Animated grid background */
+  .grid-overlay {
+    background-image: 
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.3;
+  }
+  
+  .grid-overlay--console {
+    background-image: 
+      linear-gradient(var(--console-green) 1px, transparent 1px),
+      linear-gradient(90deg, var(--console-green) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.1;
+  }
+
+  /* === PRODUCT TAGS === */
+  .tag-memory {
+    background: var(--mem);
+    color: var(--bg-0);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .tag-cognition {
+    background: var(--cog);
+    color: var(--bg-0);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .tag-waves {
+    background: var(--wav);
+    color: var(--bg-0);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* === EFFECTS === */
+  
+  /* Rails for header/footer */
+  .rail {
+    height: 2px;
+    background: var(--ai-ion);
+    opacity: 0.24;
+  }
+  
+  .rail--top {
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      var(--ai-ion) 50%, 
+      transparent 100%
+    );
+  }
+
+  /* Halo effect for hero */
+  .halo {
+    position: relative;
+  }
+  
+  .halo::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: conic-gradient(
+      from 0deg,
+      var(--uv-ring),
+      transparent 90deg,
+      transparent 270deg,
+      var(--uv-ring)
+    );
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: rotate-halo 28s linear infinite;
+    z-index: -1;
+  }
+  
+  @keyframes rotate-halo {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Scanner sweep effect */
+  .scanner-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .scanner-sweep::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--console-cyan) 50%,
+      transparent 100%
+    );
+    animation: scanner 3s ease-in-out infinite;
+    z-index: -1;
+  }
+  
+  @keyframes scanner {
+    0% { left: -100%; opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* === ACCESSIBILITY === */
+  
+  /* Skip to content link */
+  .skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--ai-ion);
+    color: var(--bg-0);
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    z-index: 100;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .skip-to-content:focus {
+    transform: translateY(0%);
+  }
+
+  /* Focus styles with dual ring system */
+  :focus-visible {
+    outline: 2px solid var(--ai-ion);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Enhanced focus for forms */
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    box-shadow: 
+      0 0 0 2px var(--ai-ion),
+      0 0 0 4px color-mix(in oklab, var(--uv-ring) 40%, transparent);
+  }
+
+  /* === TYPOGRAPHY === */
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+  
+  h1 { font-size: var(--text-3xl); }
+  h2 { font-size: var(--text-4xl); }
+  h3 { font-size: var(--text-xl); }
+  h4 { font-size: var(--text-lg); }
+  
+  p {
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .font-display {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* === UTILITIES === */
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
+    .halo::before,
+    .scanner-sweep::after {
+      animation: none !important;
+    }
+  }
+
+  /* === CANVAS POSITIONING === */
+  
+  /* Single fusion canvas behind all content */
+  .fusion-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  /* Ensure content layers are above canvas */
+  .nav, .hero, .mcp, .cases, .about, .contact, .site-footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === MCP SPECIFIC STYLES === */
+  
+  /* MCP Cards with signatures */
+  .mcp-card {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mcp-card.memory::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--human-copper) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .mcp-card.memory:hover::before {
+    opacity: 0.2;
+  }
+  
+  .mcp-card.cognition::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(45deg, transparent 49%, var(--uv-ring) 50%, transparent 51%),
+      linear-gradient(-45deg, transparent 49%, var(--uv-ring) 50%, transparent 51%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .mcp-card.cognition:hover::before {
+    opacity: 0.05;
+  }
+  
+  .mcp-card.waves::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--wav);
+    opacity: 0;
+    animation: wave-pulse 2s ease-in-out infinite;
+    transition: opacity 0.3s ease;
+  }
+  
+  .mcp-card.waves:hover::before {
+    opacity: 0.6;
+  }
+  
+  @keyframes wave-pulse {
+    0%, 100% { transform: scaleX(0.5); opacity: 0.3; }
+    50% { transform: scaleX(1); opacity: 0.8; }
+  }
+
+  /* === CONSOLE SPECIFIC ENHANCEMENTS === */
+  
+  /* Typewriter effect for console text */
+  .typewriter {
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typewriter 2s steps(40, end);
+  }
+  
+  @keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+  
+  /* Console prompt styling */
+  .console-prompt::before {
+    content: '$ ';
+    color: var(--console-green);
+    font-weight: 500;
+  }
+  
+  /* Status indicators */
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .status-indicator--online { 
+    background: var(--console-green);
+    box-shadow: 0 0 6px var(--console-green);
+  }
+  
+  .status-indicator--warning { 
+    background: var(--console-amber);
+    box-shadow: 0 0 6px var(--console-amber);
+  }
+  
+  .status-indicator--error { 
+    background: var(--console-red);
+    box-shadow: 0 0 6px var(--console-red);
+  }
+
+  /* === PERFORMANCE OPTIMIZATIONS === */
+  
+  /* GPU acceleration for animations */
+  .btn, .card, .halo::before, .scanner-sweep::after {
+    will-change: transform;
+  }
+  
+  /* Contain layout shifts */
+  .container {
+    contain: layout;
+  }
+}
+
+# ================================================
+# FILE: src/lib/utils.ts
+# ================================================
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+
+# ================================================
+# FILE: src/main.tsx
+# ================================================
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { initOceanFusionComplete } from './particles/init'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+// Initialize Ocean-Fusion particle system after React renders
+setTimeout(() => {
+  try {
+    const engine = initOceanFusionComplete({
+      theme: 'ocean-fusion',
+      performance: 'low',
+      enableAutoModes: true
+    });
+    console.log('✅ Ocean-Fusion particle system initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize particle system:', error);
+  }
+}, 100);
+
+
+# ================================================
+# FILE: src/pages/Booking.tsx
+# ================================================
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Clock, CheckCircle, Star, Zap } from "lucide-react";
+
+const BookingPage = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Agentic Development Consulting
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Expert technical consultation with Ocean Li. 
+            Advisory sessions for agent systems architecture.
+          </p>
+        </div>
+
+        {/* Pricing Tiers */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+          {/* 15 Minutes */}
+          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">15 minutes</span>
+              </div>
+              <CardTitle className="text-3xl font-bold">$79</CardTitle>
+              <CardDescription>Triage</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-grow">
+              <div className="space-y-4 flex-grow">
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>Perfect for:</p>
+                  <ul className="space-y-1">
+                    <li>• Quick assessment</li>
+                    <li>• Specific question answered</li>
+                  </ul>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Discord support included</span>
+                </div>
+              </div>
+              <Button className="w-full mt-4" variant="outline" asChild>
+                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                  Book 15 min
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* 30 Minutes - Most Popular */}
+          <Card className="gradient-card energy-glow border-2 border-primary/30 relative flex flex-col h-full">
+            <div className="absolute top-2 right-2">
+              <Star className="h-4 w-4 text-accent" />
+            </div>
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">30 minutes</span>
+              </div>
+              <CardTitle className="text-3xl font-bold">$159</CardTitle>
+              <CardDescription>Architecture Session</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-grow">
+              <div className="space-y-4 flex-grow">
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>Perfect for:</p>
+                  <ul className="space-y-1">
+                    <li>• Architecture review</li>
+                    <li>• Implementation strategy</li>
+                    <li>• Clear next steps</li>
+                  </ul>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Discord support included</span>
+                </div>
+              </div>
+              <Button className="w-full mt-4" asChild>
+                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                  Book 30 min
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* 60 Minutes */}
+          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">60 minutes</span>
+              </div>
+              <CardTitle className="text-3xl font-bold">$249</CardTitle>
+              <CardDescription>Working Session</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-grow">
+              <div className="space-y-4 flex-grow">
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>Perfect for:</p>
+                  <ul className="space-y-1">
+                    <li>• Live problem solving</li>
+                    <li>• Build prototype together</li>
+                    <li>• Multiple topics covered</li>
+                  </ul>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Discord support included</span>
+                </div>
+              </div>
+              <Button className="w-full mt-4" variant="outline" asChild>
+                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                  Book 60 min
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* 105 Minutes */}
+          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">105 minutes</span>
+              </div>
+              <CardTitle className="text-3xl font-bold">$499</CardTitle>
+              <CardDescription>Deep Exploration</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-grow">
+              <div className="space-y-4 flex-grow">
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>Perfect for:</p>
+                  <ul className="space-y-1">
+                    <li>• Deep system exploration</li>
+                    <li>• Strategic planning</li>
+                    <li>• Comprehensive review</li>
+                  </ul>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Discord support included</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Zap className="h-4 w-4" />
+                    <span>Ad-hoc booking access</span>
+                  </div>
+                </div>
+              </div>
+              <Button className="w-full mt-4" variant="outline" asChild>
+                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                  Book 105 min
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Session Prep */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-8 text-center">How it works</h2>
+          
+          <div className="gradient-card p-8 border border-border/50">
+            <p className="text-base text-muted-foreground leading-relaxed mb-6">
+              You bring the problem—I bring the patterns. We'll work through your specific 
+              challenge together, whether it's agent orchestration, MCP integration, 
+              or figuring out why your system isn't behaving as expected.
+            </p>
+            
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">Bring whatever you're working on</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• Architecture decisions that need a second opinion</li>
+                <li>• Agent systems that aren't behaving as expected</li>
+                <li>• Performance bottlenecks or scaling challenges</li>
+                <li>• Ideas you want to validate before building</li>
+                <li>• Or just questions about how this stuff actually works</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default BookingPage;
+
+# ================================================
+# FILE: src/pages/Index.tsx
+# ================================================
+
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import CredibilityLine from "@/components/CredibilityLine";
+import SavingsCards from "@/components/SavingsCards";
+import AnimatedTerminalLog from "@/components/AnimatedTerminalLog";
+import ProblemSection from "@/components/ProblemSection";
+import SolutionSection from "@/components/SolutionSection";
+import ServicesSection from "@/components/ServicesSection";
+import ProofSection from "@/components/ProofSection";
+import QualificationSection from "@/components/QualificationSection";
+import ProcessSection from "@/components/ProcessSection";
+import FinalCTA from "@/components/FinalCTA";
+import Footer from "@/components/Footer";
+import SkipLink from "@/components/SkipLink";
+import McpVisualAnchors from "@/components/McpVisualAnchors";
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-background" data-theme="ocean-fusion">
+      <canvas id="fusion-canvas" className="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+      <McpVisualAnchors />
+      <SkipLink />
+      <Navbar />
+      <main id="main-content" tabIndex={-1}>
+        <Hero />
+        <CredibilityLine />
+        <SavingsCards />
+        <AnimatedTerminalLog />
+        <ProofSection />
+        <ProcessSection />
+        <QualificationSection />
+        <FinalCTA />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Index;
+
+
+# ================================================
+# FILE: src/pages/McpTools.tsx
+# ================================================
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { 
+  McpBlueprint, 
+  MemoryMcpIcon, 
+  CognitionMcpIcon, 
+  WavesMcpIcon
+} from "@/components/icons/Mcp";
+import { FanInBusIcon, SlidingWindowIcon, BridgeLinkIcon } from "@/components/icons/WhyMcp";
+
+const McpToolsPage = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-foreground mb-4">MCP Tools Ecosystem</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mb-6">
+            MCP tools for memory, semantic search, and versioned context. 
+            Works with Claude and VS Code. Framework-agnostic integration.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-10 mb-12">
+          {/* Memory MCP */}
+          <Card className="gradient-card hover:energy-glow/30 transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-start gap-4">
+                <div className="icon-plate icon-plate--lg text-primary flex-shrink-0 mt-1">
+                  <MemoryMcpIcon className="h-16 w-16" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold text-foreground mb-2">Memory MCP</CardTitle>
+                  <CardDescription className="text-sm">
+                    Persistent memory with semantic search across sessions
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 flex flex-col flex-grow">
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Core Features</h4>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li>• Save and retrieve context across sessions</li>
+                  <li>• Semantic search with embedding support</li>
+                  <li>• Type-based organization (notes, facts, events)</li>
+                  <li>• Version tracking and update history</li>
+                </ul>
+              </div>
+              <div className="flex-grow">
+                <p className="text-sm text-muted-foreground">
+                  Perfect for agents that need to remember user preferences and maintain conversation context.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Persistence</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Semantic Search</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Context</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Cognition MCP */}
+          <Card className="gradient-card hover:energy-glow/30 transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-start gap-4">
+                <div className="icon-plate icon-plate--lg text-primary flex-shrink-0 mt-1">
+                  <CognitionMcpIcon className="h-16 w-16" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold text-foreground mb-2">Cognition MCP</CardTitle>
+                  <CardDescription className="text-sm">
+                    Advanced cognitive operations with intelligent ranking
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 flex flex-col flex-grow">
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Capabilities</h4>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li>• Rich metadata and importance scoring</li>
+                  <li>• Proactive context suggestions</li>
+                  <li>• Planning context for orchestration</li>
+                  <li>• Agent recommendation patterns</li>
+                </ul>
+              </div>
+              <div className="flex-grow">
+                <p className="text-sm text-muted-foreground">
+                  Rust/Python hybrid with Candle embeddings for high-performance cognitive operations.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Rust/Python</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Embeddings</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Planning</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Waves MCP */}
+          <Card className="gradient-card hover:energy-glow/30 transition-all duration-300 flex flex-col h-full">
+            <CardHeader>
+              <div className="flex items-start gap-4">
+                <div className="icon-plate icon-plate--lg text-primary flex-shrink-0 mt-1">
+                  <WavesMcpIcon className="h-16 w-16" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold text-foreground mb-2">Waves MCP</CardTitle>
+                  <CardDescription className="text-sm">
+                    Life-first accountability and progress tracking
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 flex flex-col flex-grow">
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Tracking System</h4>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li>• Gate-based progress (ALIVE/WORK)</li>
+                  <li>• Daily accountability summaries</li>
+                  <li>• Energy and blocker monitoring</li>
+                  <li>• Natural language pattern search</li>
+                </ul>
+              </div>
+              <div className="flex-grow">
+                <p className="text-sm text-muted-foreground">
+                  Built for sustainable productivity—tracks both personal wellness and work progress.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Life Balance</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Accountability</span>
+                <span className="px-2 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Progress</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Benefits Section */}
+        <div className="mb-12 mt-10">
+          <h2 className="text-2xl font-bold text-foreground mb-8">Why MCP?</h2>
+          <div className="grid md:grid-cols-3 gap-10">
+            <Card className="bg-slate-800/20 border-slate-700/30 hover:bg-slate-800/30 transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-start">
+                  <div className="icon-plate icon-plate--xl text-primary mb-3">
+                    <FanInBusIcon className="h-20 w-20" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">One Protocol, Whole Stack</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Replace dozens of custom integrations with a single standard—like HTTP did for the web.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-slate-800/20 border-slate-700/30 hover:bg-slate-800/30 transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-start">
+                  <div className="icon-plate icon-plate--xl text-primary mb-3">
+                    <SlidingWindowIcon className="h-20 w-20" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">Live Context Streaming</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Your AI sees current state as you see it—live data from tools, not yesterday's export.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-slate-800/20 border-slate-700/30 hover:bg-slate-800/30 transition-all duration-300">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-start">
+                  <div className="icon-plate icon-plate--xl text-primary mb-3">
+                    <BridgeLinkIcon className="h-20 w-20" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">Model–Tool Bridge</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Finally close the gap between powerful models and your business systems—no rewrites.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center py-12 mt-12 border-t border-border/30">
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            Ready to Integrate MCP Tools?
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Get expert guidance on integrating MCP tools into your agentic workflows. 
+            From setup to advanced patterns.
+          </p>
+          <Link to="/booking">
+            <Button size="lg" className="text-lg px-8 energy-glow">
+              Book a session
+            </Button>
+          </Link>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default McpToolsPage;
+
+# ================================================
+# FILE: src/pages/NotFound.tsx
+# ================================================
+
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+
+const NotFound = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.error(
+      "404 Error: User attempted to access non-existent route:",
+      location.pathname
+    );
+  }, [location.pathname]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="max-w-2xl mx-auto px-6 text-center">
+        <h1 className="text-2xl font-semibold text-foreground mb-4">
+          Page not found
+        </h1>
+        <p className="text-lg text-muted-foreground mb-8">
+          This page doesn't exist. Let's get you back on track.
+        </p>
+        <Button asChild>
+          <a href="/">
+            Back home
+          </a>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default NotFound;
+
+
+# ================================================
+# FILE: src/pages/Projects.tsx
+# ================================================
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExternalLink, Github, BookOpen, Code, GitBranch, Package } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const ProjectsPage = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-foreground mb-4">Open Source Projects</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl">
+            Frameworks I built. They encode the patterns I apply in consulting. Adoption is optional.
+          </p>
+        </div>
+
+        {/* LionAGI Section */}
+        <div className="mb-16">
+          <Card className="gradient-card hover:energy-glow/50 transition-all duration-300 relative before:absolute before:-left-px before:-right-px before:-top-px before:h-1 before:bg-primary before:rounded-t-lg">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-2xl font-bold text-foreground mb-2">LionAGI</CardTitle>
+                  <CardDescription className="text-lg">
+                    Agent orchestration framework with observable workflows and formal verification
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href="https://github.com/khive-ai/lionagi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-slate-800/60 rounded-md transition-colors"
+                    aria-label="LionAGI GitHub repository"
+                  >
+                    <Github className="h-5 w-5 text-slate-400 hover:text-slate-300" />
+                  </a>
+                  <a
+                    href="https://khive-ai.github.io/lionagi/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-slate-800/60 rounded-md transition-colors"
+                    aria-label="LionAGI documentation"
+                  >
+                    <BookOpen className="h-5 w-5 text-slate-400 hover:text-slate-300" />
+                  </a>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="font-semibold text-foreground mb-3">Core Features</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Code className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>40+ Jupyter notebooks with production patterns</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <GitBranch className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>Role + domain composition for specialized agents</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Package className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>Observable decision trees and workflow patterns</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-3">Use Cases</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• Multi-agent conversation orchestration</li>
+                    <li>• Complex workflow automation</li>
+                    <li>• Production agent system deployment</li>
+                    <li>• Observable AI reasoning systems</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-border/30">
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Python</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Multi-Agent</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Async</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Orchestration</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Observable Workflows</span>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex items-center gap-4">
+                <a
+                  href="https://github.com/khive-ai/lionagi/tree/main/notebooks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent hover:text-accent/80 transition-colors flex items-center gap-2"
+                >
+                  View Notebooks
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <Link to="/booking">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    Need Implementation Help?
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pydapter Section */}
+        <div className="mb-16">
+          <Card className="gradient-card hover:energy-glow/50 transition-all duration-300">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-2xl font-bold text-foreground mb-2">Pydapter</CardTitle>
+                  <CardDescription className="text-lg">
+                    Universal data connection layer with async-first design and migration utilities
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href="https://github.com/lionagi/pydapter"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-slate-800/60 rounded-md transition-colors"
+                    aria-label="Pydapter GitHub repository"
+                  >
+                    <Github className="h-5 w-5 text-slate-400 hover:text-slate-300" />
+                  </a>
+                  <a
+                    href="https://pydapter.readthedocs.io/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-slate-800/60 rounded-md transition-colors"
+                    aria-label="Pydapter documentation"
+                  >
+                    <BookOpen className="h-5 w-5 text-slate-400 hover:text-slate-300" />
+                  </a>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="font-semibold text-foreground mb-3">Core Features</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Code className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>Database adapters for PostgreSQL, MySQL, SQLite</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <GitBranch className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>Async-first with sync fallbacks</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Package className="h-4 w-4 mt-1 flex-shrink-0 text-accent/60" />
+                      <span>Model migrations and schema evolution</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-3">Use Cases</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• Unified data access layer</li>
+                    <li>• Multi-database applications</li>
+                    <li>• Data migration pipelines</li>
+                    <li>• Format conversion utilities</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-border/30">
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Python</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Data</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Async</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">Migration</span>
+                  <span className="px-2.5 py-1 bg-slate-800/60 border border-slate-700/50 text-slate-300 text-xs rounded">PostgreSQL</span>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex items-center gap-4">
+                <a
+                  href="https://pydapter.readthedocs.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent hover:text-accent/80 transition-colors flex items-center gap-2"
+                >
+                  Read Documentation
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <Link to="/booking">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    Need Integration Help?
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center py-12 border-t border-border/30">
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            Ready to Build with These Frameworks?
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Need help with your agent systems? Let's talk architecture and implementation.
+          </p>
+          <Link to="/booking">
+            <Button size="lg" className="text-lg px-8 energy-glow">
+              Book a Session
+            </Button>
+          </Link>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default ProjectsPage;
+
+# ================================================
+# FILE: src/particles/FusionParticles.ts
+# ================================================
+
+// src/particles/FusionParticles.ts
+// Ocean-Fusion WebGL2 Particle System with Console Enhancement
+// Deterministic, performance-optimized particle engine for visual sophistication
+
+import { 
+  Field, 
+  Mode, 
+  ParticleTheme, 
+  FlowAnchor, 
+  DrawPass, 
+  FusionOptions 
+} from './types';
+
+export class FusionParticles {
+  private gl!: WebGL2RenderingContext;
+  private prog!: WebGLProgram;
+  private u = {} as Record<string, WebGLUniformLocation>;
+  private canvas: HTMLCanvasElement;
+  private dpr: number;
+  private raf = 0;
+  private t0 = performance.now();
+  private running = false;
+  private mode: Mode = 'idle';
+  private intensity = 0.85; // 0..1
+  private pointer: { x: number; y: number; active: boolean } = { x: 0, y: 0, active: false };
+  private passes: Record<Field, DrawPass> = {} as any;
+  private maxAnchors = 8;
+
+  private resizeObs?: ResizeObserver;
+  private visObs?: IntersectionObserver;
+
+  constructor(private opts: FusionOptions) {
+    this.canvas = opts.canvas;
+    this.dpr = opts.dpr || Math.min(devicePixelRatio || 1, 2);
+    
+    if (opts.prefersReducedMotion === undefined) {
+      opts.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    
+    try {
+      this.initGL();
+      this.createProgram();
+      this.createPasses();
+      this.bindEvents();
+      
+      if (!opts.prefersReducedMotion) {
+        this.start();
+      }
+      
+      console.log('✅ Ocean-Fusion particles initialized successfully');
+    } catch (error) {
+      console.error('❌ Error initializing Ocean-Fusion particles:', error);
+      throw error;
+    }
+  }
+
+  /** Public API **/
+  start() {
+    if (this.running) return;
+    this.running = true;
+    this.t0 = performance.now();
+    this.loop();
+  }
+
+  stop() {
+    this.running = false;
+    cancelAnimationFrame(this.raf);
+  }
+
+  setMode(mode: Mode) { 
+    this.mode = mode; 
+  }
+
+  setIntensity(v: number) { 
+    this.intensity = Math.max(0, Math.min(1, v)); 
+  }
+
+  setAnchors(field: Field, sources: FlowAnchor[] = [], sinks: FlowAnchor[] = []) {
+    const pass = this.passes[field];
+    const s = this.computeAnchors(sources);
+    const k = this.computeAnchors(sinks);
+    pass.sources.set(s.data); pass.numSrc = s.count;
+    pass.sinks.set(k.data);   pass.numSnk = k.count;
+  }
+
+  resize() { 
+    this.resizeCanvas(); 
+  }
+
+  destroy() {
+    this.stop();
+    this.resizeObs?.disconnect();
+    this.visObs?.disconnect();
+  }
+
+  /** Internal Implementation **/
+  private initGL() {
+    const gl = this.canvas.getContext('webgl2', {
+      antialias: true, 
+      alpha: true, 
+      premultipliedAlpha: true, 
+      powerPreference: 'high-performance'
+    }) as WebGL2RenderingContext | null;
+    
+    if (!gl) throw new Error('WebGL2 not supported');
+    
+    this.gl = gl;
+    this.resizeCanvas();
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  }
+
+  private resizeCanvas() {
+    const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    const W = Math.max(1, Math.floor(w * this.dpr)), H = Math.max(1, Math.floor(h * this.dpr));
+    if (this.canvas.width !== W || this.canvas.height !== H) {
+      this.canvas.width = W; 
+      this.canvas.height = H;
+      this.gl.viewport(0, 0, W, H);
+    }
+  }
+
+  private createProgram() {
+    const vs = `#version 300 es
+    precision highp float;
+    layout(location=0) in vec2 aSeed;
+    layout(location=1) in float aPhase;
+    layout(location=2) in float aSpeed;
+    uniform float uTime;
+    uniform vec2 uRes;
+    uniform float uPixelRatio;
+    uniform int  uMode;       // 0 idle,1 converge,2 deliver,3 cta
+    uniform float uIntensity; // 0..1
+    uniform int  uNumSrc;
+    uniform int  uNumSnk;
+    uniform vec2 uSrc[8];
+    uniform vec2 uSnk[8];
+    uniform float uSizeMin;
+    uniform float uSizeMax;
+    uniform vec2 uPointer;     // NDC
+    uniform float uPointerOn;
+    uniform float uAttract;    // 0..1 ramp to prevent initial flush
+
+    // === Hash/Noise helpers (fast, deterministic) ===
+    float hash12(vec2 p){ 
+      vec3 p3 = fract(vec3(p.xyx) * 0.1031); 
+      p3 += dot(p3, p3.yzx + 33.33); 
+      return fract((p3.x + p3.y)*p3.z); 
+    }
+    
+    vec2 hash22(vec2 p){ 
+      float n = sin(dot(p, vec2(41.0, 289.0))); 
+      return fract(vec2(262144.0, 32768.0) * n); 
+    }
+    
+    float noise(vec2 p){
+      vec2 i = floor(p), f = fract(p);
+      float a = hash12(i);
+      float b = hash12(i + vec2(1.0,0.0));
+      float c = hash12(i + vec2(0.0,1.0));
+      float d = hash12(i + vec2(1.0,1.0));
+      vec2 u = f*f*(3.0-2.0*f);
+      return mix(a, b, u.x) + (c - a)*u.y*(1.0-u.x) + (d - b)*u.x*u.y;
+    }
+    
+    // Curl of pseudo noise for organic flow
+    vec2 curl(vec2 p){
+      float e = 0.001;
+      float n1 = noise(p + vec2(0.0, e));
+      float n2 = noise(p - vec2(0.0, e));
+      float n3 = noise(p + vec2(e, 0.0));
+      float n4 = noise(p - vec2(e, 0.0));
+      float dx = (n1 - n2) / (2.0*e);
+      float dy = (n3 - n4) / (2.0*e);
+      return vec2(dy, -dx);
+    }
+
+    vec2 field(vec2 p){
+      // Base curl flow (scaled with time for gentle evolution)
+      vec2 f = curl(p*1.7 + uTime*0.05) * 0.35;
+      
+      // Attract to sinks; slight repel from sources
+      for (int i=0;i<8;i++){
+        if(i<uNumSnk){ 
+          vec2 s = uSnk[i]; 
+          vec2 d = s - p; 
+          float L = max(length(d), 0.001); 
+          f += normalize(d) * (uAttract * 0.06 / L);
+        }
+        if(i<uNumSrc){ 
+          vec2 s = uSrc[i]; 
+          vec2 d = p - s; 
+          float L = max(length(d), 0.001); 
+          f += normalize(d) * (0.035 / L);
+        }
+      }
+      
+      // Pointer magnetism for console interactivity
+      vec2 dp = uPointer - p;
+      f += normalize(dp) * (uPointerOn * 0.16 / max(length(dp), 0.001));
+      return f;
+    }
+
+    void main(){
+      // Seeds distributed in NDC [-1,1] space
+      vec2 p = aSeed;
+
+      float t = uTime*0.6 + aPhase;
+      vec2 f = field(p);
+
+      // Deterministic drift: oscillate around seed along field & noise
+      vec2 drift = f * (0.12*sin(t)) + curl(p*2.1 + t*0.07) * 0.05;
+
+      // Mode-based behavior envelopes
+      float mIdle = float(uMode==0);
+      float mConv = float(uMode==1);
+      float mDel  = float(uMode==2);
+      float mCta  = float(uMode==3);
+
+      float drive = uIntensity * (0.6*mIdle + 0.9*mConv + 1.0*mDel + 1.2*mCta);
+      vec2 pos = p + drift * drive * aSpeed;
+
+      // Subtle orbital motion in converge/cta modes
+      pos += vec2(sin(t*0.5), cos(t*0.5)) * (0.01*(mConv+mCta));
+
+      float s = mix(uSizeMin, uSizeMax, 0.5 + 0.5*sin(t*2.0));
+      gl_PointSize = s * uPixelRatio;
+      gl_Position = vec4(pos, 0.0, 1.0);
+    }`;
+
+    const fs = `#version 300 es
+    precision highp float;
+    out vec4 o;
+    uniform vec3 uColor;
+
+    void main(){
+      vec2 uv = gl_PointCoord*2.0 - 1.0;
+      float r = length(uv);
+      float alpha = smoothstep(1.0, 0.55, 1.0 - r*r); // Soft particle core
+      o = vec4(uColor, alpha);
+    }`;
+
+    const gl = this.gl;
+    const compile = (type: number, src: string) => {
+      const sh = gl.createShader(type)!; 
+      gl.shaderSource(sh, src); 
+      gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(sh)); 
+        throw new Error('Shader compile failed');
+      } 
+      return sh;
+    };
+
+    const pr = gl.createProgram()!;
+    gl.attachShader(pr, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(pr, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(pr);
+    
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) {
+      throw new Error('Program link failed');
+    }
+    
+    gl.useProgram(pr); 
+    this.prog = pr;
+
+    // Cache uniform locations
+    const uni = (n: string) => gl.getUniformLocation(pr, n)!;
+    ['uTime','uRes','uPixelRatio','uMode','uIntensity','uNumSrc','uNumSnk',
+     'uSrc[0]','uSnk[0]','uSizeMin','uSizeMax','uColor','uPointer','uPointerOn','uAttract'
+    ].forEach(n=> this.u[n] = uni(n));
+  }
+
+  private createPasses() {
+    const mobile = matchMedia('(max-width: 640px)').matches;
+    const perField = mobile ? (this.opts.mobilePerField ?? 20000) : (this.opts.maxPerField ?? 80000);
+
+    (['human','ai','fusion'] as Field[]).forEach((f) => {
+      const theme = this.opts.themes[f];
+      const count = perField;
+
+      const gl = this.gl;
+      const vao = gl.createVertexArray(); 
+      gl.bindVertexArray(vao);
+
+      // Seeds in NDC space [-1,1], concentrated bands per field
+      const seeds = new Float32Array(count*2);
+      for (let i=0;i<count;i++){
+        const u = Math.random()*2-1;
+        const v = Math.random()*2-1;
+        let x=u, y=v;
+        
+        // Field-specific spatial distribution - constrained to central column
+        if (f==='human'){ x = -0.15 + u*0.12; y = v*0.8; }     // Left side of center - copper
+        if (f==='ai'){    x =  0.03 + u*0.12; y = v*0.8; }      // Right side of center - cyan
+        if (f==='fusion'){ x = -0.06 + u*0.12; y = v*0.6; }     // Center overlap - white fusion
+        
+        seeds[i*2]=x; seeds[i*2+1]=y;
+      }
+      
+      const seedBuf = gl.createBuffer(); 
+      gl.bindBuffer(gl.ARRAY_BUFFER, seedBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(0); // aSeed
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+      // Phase + speed variation for organic motion
+      const phase = new Float32Array(count);
+      const speed = new Float32Array(count);
+      for (let i=0;i<count;i++){ 
+        phase[i]=Math.random()*6.283; 
+        speed[i]=theme.speed[0] + Math.random()*(theme.speed[1]-theme.speed[0]); 
+      }
+      
+      const phBuf = gl.createBuffer(); 
+      gl.bindBuffer(gl.ARRAY_BUFFER, phBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, phase, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(1); 
+      gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0);
+
+      const spBuf = gl.createBuffer(); 
+      gl.bindBuffer(gl.ARRAY_BUFFER, spBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, speed, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(2); 
+      gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 0, 0);
+
+      gl.bindVertexArray(null);
+
+      this.passes[f] = {
+        count, vao, seed: seedBuf, phase: phBuf, speed: spBuf,
+        color: theme.color, size: theme.size, theme,
+        sources: new Float32Array(this.maxAnchors*2),
+        sinks:   new Float32Array(this.maxAnchors*2),
+        numSrc:0, numSnk:0,
+      };
+    });
+
+    // Initialize anchors if provided
+    if (this.opts.anchors) {
+      for (const k of Object.keys(this.opts.anchors) as Field[]) {
+        const a = this.opts.anchors![k]!;
+        this.setAnchors(k, a.sources ?? [], a.sinks ?? []);
+      }
+    }
+  }
+
+  private bindEvents() {
+    // Debounced resize handling to prevent ResizeObserver loops
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const resize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => this.resizeCanvas(), 16); // ~60fps throttle
+    };
+    this.resizeObs = new ResizeObserver(resize);
+    this.resizeObs.observe(this.canvas);
+
+    // Visibility-based performance gating
+    this.visObs = new IntersectionObserver(entries=>{
+      for (const e of entries){
+        if (e.isIntersecting) this.start(); 
+        else this.stop();
+      }
+    }, { threshold: .15 });
+    this.visObs.observe(this.canvas);
+
+    // Pointer magnetism for console interactivity
+    const toNDC = (e: PointerEvent) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
+      const y = 1 - ((e.clientY - rect.top)/rect.height) * 2;
+      return {x,y};
+    };
+    
+    const onMove = (e: PointerEvent) => { 
+      const p = toNDC(e); 
+      this.pointer.x = p.x; 
+      this.pointer.y = p.y; 
+    };
+    
+    this.canvas.addEventListener('pointermove', onMove);
+    this.canvas.addEventListener('pointerenter', e => { 
+      this.pointer.active = true; 
+      onMove(e); 
+    });
+    this.canvas.addEventListener('pointerleave', () => { 
+      this.pointer.active = false; 
+    });
+  }
+
+  private loop = () => {
+    if (!this.running) return;
+    this.raf = requestAnimationFrame(this.loop);
+    
+    const gl = this.gl;
+    const now = performance.now();
+    const t = (now - this.t0) / 1000;
+
+    gl.useProgram(this.prog);
+    gl.uniform1f(this.u['uTime'], t);
+    gl.uniform2f(this.u['uRes'], this.canvas.width, this.canvas.height);
+    gl.uniform1f(this.u['uPixelRatio'], this.dpr);
+    gl.uniform1i(this.u['uMode'], ['idle','converge','deliver','cta'].indexOf(this.mode));
+    gl.uniform1f(this.u['uIntensity'], this.intensity);
+    // Smoothly ramp attraction during first 1.5s to avoid initial flush
+    const attract = Math.min(1, (now - this.t0) / 1500);
+    gl.uniform1f(this.u['uAttract'], attract);
+    gl.uniform2f(this.u['uPointer'], this.pointer.x, this.pointer.y);
+    gl.uniform1f(this.u['uPointerOn'], this.pointer.active ? 1 : 0);
+
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Render three field passes: human (copper), ai (cyan), fusion (white)
+    (['human','ai','fusion'] as Field[]).forEach((f)=>{
+      const p = this.passes[f];
+      gl.bindVertexArray(p.vao);
+
+      gl.uniform1f(this.u['uSizeMin'], p.size[0]);
+      gl.uniform1f(this.u['uSizeMax'], p.size[1]);
+      gl.uniform3f(this.u['uColor'], p.color[0], p.color[1], p.color[2]);
+
+      // Flow anchors
+      gl.uniform1i(this.u['uNumSrc'], p.numSrc);
+      gl.uniform1i(this.u['uNumSnk'], p.numSnk);
+      gl.uniform2fv(this.u['uSrc[0]'], p.sources);
+      gl.uniform2fv(this.u['uSnk[0]'], p.sinks);
+
+      gl.drawArrays(gl.POINTS, 0, p.count);
+    });
+    
+    gl.bindVertexArray(null);
+  };
+
+  private computeAnchors(items: FlowAnchor[]){
+    const out = new Float32Array(this.maxAnchors*2);
+    const rect = this.canvas.getBoundingClientRect();
+    const n = Math.min(items.length, this.maxAnchors);
+    
+    for (let i=0;i<n;i++){
+      const el = items[i].el as HTMLElement;
+      const r = el.getBoundingClientRect();
+      const cx = (r.left + r.width/2 - rect.left) / rect.width;
+      const cy = (r.top + r.height/2 - rect.top) / rect.height;
+      out[i*2] = cx*2 - 1;     // Convert to NDC
+      out[i*2+1] = 1 - cy*2;   // Flip Y for WebGL
+    }
+    
+    return { data: out, count: n };
+  }
+}
+
+// Default Ocean-Fusion + Console themes
+export const createOceanFusionThemes = (): Record<Field, ParticleTheme> => ({
+  human: { 
+    color: [0.79, 0.53, 0.23],  // Copper - human warmth
+    size: [1.8, 3.2], 
+    speed: [0.8, 1.1] 
+  },
+  ai: { 
+    color: [0.0, 0.82, 1.0],    // Ion cyan - AI precision 
+    size: [1.4, 2.6], 
+    speed: [1.0, 1.6] 
+  },
+  fusion: { 
+    color: [1, 1, 1],           // Pure white - synthesis
+    size: [2.2, 4.6], 
+    speed: [0.9, 1.4] 
+  }
+});
+
+// Enhanced console-compatible themes with neon accents
+export const createConsoleEnhancedThemes = (): Record<Field, ParticleTheme> => ({
+  human: { 
+    color: [1.0, 0.6, 0.2],     // Brighter copper
+    size: [1.8, 3.0],          // Subtle particles
+    speed: [0.7, 1.0] 
+  },
+  ai: { 
+    color: [0.0, 1.0, 0.8],     // Console cyan-green
+    size: [1.4, 2.6],          // Subtle particles
+    speed: [1.1, 1.8] 
+  },
+  fusion: { 
+    color: [0.7, 0.85, 1.0],    // Soft blue-white, 70% opacity
+    size: [1.0, 1.8],           // Smaller, subtler
+    speed: [0.8, 1.3] 
+  }
+});
+
+// Debug version with extremely visible particles
+export const createDebugThemes = (): Record<Field, ParticleTheme> => ({
+  human: { 
+    color: [1.0, 0.0, 0.0],     // Bright red
+    size: [20.0, 30.0],         // Huge particles 
+    speed: [0.5, 0.8] 
+  },
+  ai: { 
+    color: [0.0, 1.0, 0.0],     // Bright green
+    size: [20.0, 30.0],         // Huge particles
+    speed: [0.5, 0.8] 
+  },
+  fusion: { 
+    color: [0.0, 0.0, 1.0],     // Bright blue
+    size: [25.0, 35.0],         // Massive particles
+    speed: [0.5, 0.8] 
+  }
+});
+
+# ================================================
+# FILE: src/particles/index.ts
+# ================================================
+
+// src/particles/index.ts
+// Ocean-Fusion Particle System - Main Exports
+
+export * from './types';
+export * from './FusionParticles';
+export * from './init';
+
+// Re-export main classes and functions for convenience
+export { FusionParticles } from './FusionParticles';
+export { 
+  initOceanFusionParticles,
+  setupParticleAnchors,
+  setupParticleModes,
+  initOceanFusionComplete,
+  initConsoleParticles
+} from './init';
+
+// Default export for simple import
+export { initOceanFusionComplete as default } from './init';
+
+# ================================================
+# FILE: src/particles/init.ts
+# ================================================
+
+// src/particles/init.ts
+// Ocean-Fusion + Console Particle System Initialization
+// Ready-to-use setup for the visual foundation
+
+import { FusionParticles, createOceanFusionThemes, createConsoleEnhancedThemes, createDebugThemes } from './FusionParticles';
+
+/**
+ * Initialize the Ocean-Fusion particle system with console enhancements
+ * Call this after DOM content is loaded
+ */
+export function initOceanFusionParticles(options?: {
+  canvasId?: string;
+  theme?: 'ocean-fusion' | 'console-enhanced' | 'debug';
+  performance?: 'high' | 'balanced' | 'low';
+  reducedMotion?: boolean;
+}) {
+  const opts = {
+    canvasId: 'fusion-canvas',
+    theme: 'ocean-fusion' as const,
+    performance: 'low' as const,
+    ...options
+  };
+
+  // Get or create canvas
+  let canvas = document.getElementById(opts.canvasId) as HTMLCanvasElement;
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = opts.canvasId;
+    canvas.className = 'fusion-canvas';
+    document.body.appendChild(canvas);
+  }
+
+  // Test WebGL2 context
+  const testGL = canvas.getContext('webgl2');
+  if (!testGL) {
+    console.error('❌ WebGL2 context creation failed');
+    throw new Error('WebGL2 not supported');
+  }
+
+  const performanceLevels = {
+    high: { desktop: 20000, mobile: 8000 },
+    balanced: { desktop: 12000, mobile: 5000 },
+    low: { desktop: 6000, mobile: 2500 }
+  };
+
+  const counts = performanceLevels[opts.performance];
+  const themes = opts.theme === 'debug' 
+    ? createDebugThemes()
+    : opts.theme === 'console-enhanced' 
+    ? createConsoleEnhancedThemes() 
+    : createOceanFusionThemes();
+
+  // Initialize particle system
+  try {
+    const engine = new FusionParticles({
+      canvas,
+      maxPerField: counts.desktop,
+      mobilePerField: counts.mobile,
+      themes,
+      prefersReducedMotion: opts.reducedMotion
+    });
+
+    return engine;
+  } catch (error) {
+    console.error('❌ Failed to create FusionParticles engine:', error);
+    throw error;
+  }
+}
+
+/**
+ * Setup common anchor points for Ocean-Fusion particle flows
+ * Call this after your page content is rendered
+ */
+export function setupParticleAnchors(engine: FusionParticles) {
+  // Delay to ensure DOM is ready
+  setTimeout(() => {
+    // Human field (copper) - sources on left, flows to center
+    const humanSources = [
+      document.querySelector('#bust-silhouette'),
+      document.querySelector('.hero-visual'),
+      document.querySelector('.brand')
+    ].filter(Boolean) as Element[];
+
+    if (humanSources.length > 0) {
+      engine.setAnchors('human', 
+        humanSources.map(el => ({ el })), 
+        []
+      );
+    }
+
+    // AI field (cyan) - sources from content, flows to actions
+    const aiSources = [
+      document.querySelector('.hero-copy'),
+      document.querySelector('.nav')
+    ].filter(Boolean) as Element[];
+
+    const aiSinks = [
+      document.querySelector('.cta'),
+      document.querySelector('.btn')
+    ].filter(Boolean) as Element[];
+
+    if (aiSources.length > 0 || aiSinks.length > 0) {
+      engine.setAnchors('ai', 
+        aiSources.map(el => ({ el })), 
+        aiSinks.map(el => ({ el }))
+      );
+    }
+
+    // Fusion field (white) - flows to MCP cards and key elements
+    const fusionSinks = [
+      document.querySelector('.mcp-card.memory'),
+      document.querySelector('.mcp-card.cognition'),
+      document.querySelector('.mcp-card.waves'),
+      document.querySelector('.contact'),
+      document.querySelector('.terminal')
+    ].filter(Boolean) as Element[];
+
+    if (fusionSinks.length > 0) {
+      engine.setAnchors('fusion', 
+        [], 
+        fusionSinks.map(el => ({ el }))
+      );
+    }
+  }, 100);
+}
+
+/**
+ * Setup mode transitions based on user interactions
+ */
+export function setupParticleModes(engine: FusionParticles) {
+  // Start in idle mode
+  engine.setMode('idle');
+
+  // CTA hover → CTA mode
+  const ctaElements = document.querySelectorAll('.cta, .btn');
+  ctaElements.forEach(el => {
+    el.addEventListener('mouseenter', () => engine.setMode('cta'));
+    el.addEventListener('mouseleave', () => engine.setMode('idle'));
+  });
+
+  // Scroll-based mode transitions
+  let ticking = false;
+  const handleScroll = () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+        
+        // Check if MCP section is in view
+        const mcpSection = document.querySelector('.mcp');
+        if (mcpSection) {
+          const rect = mcpSection.getBoundingClientRect();
+          if (rect.top < windowHeight * 0.7) {
+            engine.setMode('deliver');
+          } else if (rect.top < windowHeight && rect.bottom > 0) {
+            engine.setMode('converge');
+          }
+        }
+        
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Console-specific interactions
+  const terminalElements = document.querySelectorAll('.terminal, .console-prompt');
+  terminalElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      engine.setIntensity(1.0); // Max intensity for console focus
+    });
+    el.addEventListener('mouseleave', () => {
+      engine.setIntensity(0.85); // Return to normal
+    });
+  });
+}
+
+/**
+ * Complete initialization function - call this in your main app
+ */
+export function initOceanFusionComplete(options?: {
+  theme?: 'ocean-fusion' | 'console-enhanced';
+  performance?: 'high' | 'balanced' | 'low';
+  enableAutoModes?: boolean;
+}) {
+  const opts = {
+    theme: 'ocean-fusion' as const,
+    performance: 'low' as const,
+    enableAutoModes: true,
+    ...options
+  };
+
+  // Ensure DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => init());
+  } else {
+    init();
+  }
+
+  function init() {
+    // Add theme attribute to html element
+    document.documentElement.setAttribute('data-theme', 'ocean-fusion');
+    
+    // Initialize particle system
+    const engine = initOceanFusionParticles(opts);
+    
+    // Setup anchors and modes
+    setupParticleAnchors(engine);
+    
+    if (opts.enableAutoModes) {
+      setupParticleModes(engine);
+    }
+
+    // Expose to window for debugging
+    if (typeof window !== 'undefined') {
+      (window as any).fusionEngine = engine;
+    }
+
+    return engine;
+  }
+}
+
+/**
+ * Create a console-themed initialization specifically for terminal/dev UI
+ */
+export function initConsoleParticles() {
+  return initOceanFusionComplete({
+    theme: 'console-enhanced',
+    performance: 'balanced',
+    enableAutoModes: true
+  });
+}
+
+// Auto-initialize if script is loaded directly
+if (typeof window !== 'undefined' && document.readyState !== 'loading') {
+  // Check if user wants auto-init
+  const script = document.currentScript as HTMLScriptElement;
+  if (script?.dataset.autoInit !== 'false') {
+    initOceanFusionComplete();
+  }
+}
+
+# ================================================
+# FILE: src/particles/types.ts
+# ================================================
+
+// src/particles/types.ts
+// TypeScript interfaces and types for the FusionParticles WebGL system
+
+export type Field = 'human' | 'ai' | 'fusion';
+export type Mode = 'idle' | 'converge' | 'deliver' | 'cta';
+
+export interface ParticleTheme {
+  color: [number, number, number];    // linear sRGB 0..1
+  size: [number, number];             // px range
+  speed: [number, number];            // scalar multipliers
+  jitter?: number;                    // 0..1
+}
+
+export interface FlowAnchor { 
+  el: Element; 
+  weight?: number; 
+}
+
+export interface DrawPass {
+  count: number;
+  vao: WebGLVertexArrayObject | null;
+  seed: WebGLBuffer | null;   // vec2
+  phase: WebGLBuffer | null;  // float
+  speed: WebGLBuffer | null;  // float
+  color: [number, number, number];
+  size: [number, number];
+  theme: ParticleTheme;
+  sources: Float32Array; // vec2[N]
+  sinks: Float32Array;   // vec2[N]
+  numSrc: number;
+  numSnk: number;
+}
+
+export interface FusionOptions {
+  canvas: HTMLCanvasElement;
+  dpr?: number;
+  maxPerField?: number;          // desktop default 80_000
+  mobilePerField?: number;       // mobile default 20_000
+  themes: Record<Field, ParticleTheme>;
+  anchors?: Partial<Record<Field, { sources?: FlowAnchor[]; sinks?: FlowAnchor[] }>>;
+  prefersReducedMotion?: boolean;
+}
+
+# ================================================
+# FILE: src/vite-env.d.ts
+# ================================================
+
+/// <reference types="vite/client" />
+
+
+
+# ================================================
+# SUMMARY
+# ================================================
+# Total Files: 46
+# Total Lines: 5245
+# File Size: 184K
+# 
+# Includes:
+# - All React components (.tsx)
+# - All TypeScript files (.ts)
+# - All CSS files (.css)
+# - Particle system implementation
+# - Ocean-Fusion design system
+# - Console-inspired UI components
+# 
+# Excludes:
+# - components/ui/* (shadcn/ui library components)
+# - node_modules/*
+# - build files
+# ================================================
