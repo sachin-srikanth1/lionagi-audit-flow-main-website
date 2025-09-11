@@ -8,12 +8,12 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Agentic Development Consulting
+      <main className="max-w-5xl mx-auto px-6 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-3xl font-normal text-foreground mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+            Book a Session
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Expert technical consultation with Ocean Li. 
             Advisory sessions for agent systems architecture.
           </p>
@@ -22,166 +22,82 @@ const BookingPage = () => {
         {/* Pricing Tiers */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {/* 15 Minutes */}
-          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">15 minutes</span>
-              </div>
-              <CardTitle className="text-3xl font-bold">$79</CardTitle>
-              <CardDescription>Triage</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-grow">
-              <div className="space-y-4 flex-grow">
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>Perfect for:</p>
-                  <ul className="space-y-1">
-                    <li>• Quick assessment</li>
-                    <li>• Specific question answered</li>
-                  </ul>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Discord support included</span>
-                </div>
-              </div>
-              <Button className="w-full mt-4" variant="outline" asChild>
-                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
-                  Book 15 min
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="p-6 border border-border/30 rounded-lg hover:border-primary/30 transition-colors duration-200">
+            <div className="text-center mb-4">
+              <span className="text-sm text-muted-foreground">15 min</span>
+              <div className="text-2xl font-semibold text-foreground mt-1">$79</div>
+              <div className="text-sm text-muted-foreground">Triage</div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 text-center">Quick assessment • Specific question answered</p>
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                Book
+              </a>
+            </Button>
+          </div>
 
           {/* 30 Minutes - Most Popular */}
-          <Card className="gradient-card energy-glow border-2 border-primary/30 relative flex flex-col h-full">
-            <div className="absolute top-2 right-2">
-              <Star className="h-4 w-4 text-accent" />
+          <div className="p-6 border-2 border-primary/30 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors duration-200">
+            <div className="text-center mb-4">
+              <span className="text-sm text-muted-foreground">30 min</span>
+              <div className="text-2xl font-semibold text-foreground mt-1">$159</div>
+              <div className="text-sm text-muted-foreground">Architecture Session</div>
+              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded mt-2 inline-block">Most Popular</span>
             </div>
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">30 minutes</span>
-              </div>
-              <CardTitle className="text-3xl font-bold">$159</CardTitle>
-              <CardDescription>Architecture Session</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-grow">
-              <div className="space-y-4 flex-grow">
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>Perfect for:</p>
-                  <ul className="space-y-1">
-                    <li>• Architecture review</li>
-                    <li>• Implementation strategy</li>
-                    <li>• Clear next steps</li>
-                  </ul>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Discord support included</span>
-                </div>
-              </div>
-              <Button className="w-full mt-4" asChild>
-                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
-                  Book 30 min
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
+            <p className="text-sm text-muted-foreground mb-4 text-center">Architecture review • Implementation strategy • Clear next steps</p>
+            <Button size="sm" className="w-full" asChild>
+              <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                Book
+              </a>
+            </Button>
+          </div>
 
           {/* 60 Minutes */}
-          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">60 minutes</span>
-              </div>
-              <CardTitle className="text-3xl font-bold">$249</CardTitle>
-              <CardDescription>Working Session</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-grow">
-              <div className="space-y-4 flex-grow">
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>Perfect for:</p>
-                  <ul className="space-y-1">
-                    <li>• Live problem solving</li>
-                    <li>• Build prototype together</li>
-                    <li>• Multiple topics covered</li>
-                  </ul>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Discord support included</span>
-                </div>
-              </div>
-              <Button className="w-full mt-4" variant="outline" asChild>
-                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
-                  Book 60 min
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="p-6 border border-border/30 rounded-lg hover:border-primary/30 transition-colors duration-200">
+            <div className="text-center mb-4">
+              <span className="text-sm text-muted-foreground">60 min</span>
+              <div className="text-2xl font-semibold text-foreground mt-1">$249</div>
+              <div className="text-sm text-muted-foreground">Working Session</div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 text-center">Live problem solving • Build prototype together • Multiple topics covered</p>
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                Book
+              </a>
+            </Button>
+          </div>
 
           {/* 105 Minutes */}
-          <Card className="gradient-card hover:energy-glow transition-all duration-300 flex flex-col h-full">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">105 minutes</span>
-              </div>
-              <CardTitle className="text-3xl font-bold">$499</CardTitle>
-              <CardDescription>Deep Exploration</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-grow">
-              <div className="space-y-4 flex-grow">
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>Perfect for:</p>
-                  <ul className="space-y-1">
-                    <li>• Deep system exploration</li>
-                    <li>• Strategic planning</li>
-                    <li>• Comprehensive review</li>
-                  </ul>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Discord support included</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Zap className="h-4 w-4" />
-                    <span>Ad-hoc booking access</span>
-                  </div>
-                </div>
-              </div>
-              <Button className="w-full mt-4" variant="outline" asChild>
-                <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
-                  Book 105 min
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="p-6 border border-border/30 rounded-lg hover:border-primary/30 transition-colors duration-200">
+            <div className="text-center mb-4">
+              <span className="text-sm text-muted-foreground">105 min</span>
+              <div className="text-2xl font-semibold text-foreground mt-1">$499</div>
+              <div className="text-sm text-muted-foreground">Deep Exploration</div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 text-center">Deep system exploration • Strategic planning • Comprehensive review</p>
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
+                Book
+              </a>
+            </Button>
+          </div>
         </div>
 
-        {/* Session Prep */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-8 text-center">How it works</h2>
-          
-          <div className="gradient-card p-8 border border-border/50">
-            <p className="text-base text-muted-foreground leading-relaxed mb-6">
+        {/* How it works */}
+        <div className="text-center">
+          <h2 className="text-xl font-medium text-foreground mb-6">How it works</h2>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-muted-foreground leading-relaxed mb-8">
               You bring the problem—I bring the patterns. We'll work through your specific 
               challenge together, whether it's agent orchestration, MCP integration, 
               or figuring out why your system isn't behaving as expected.
             </p>
             
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Bring whatever you're working on</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• Architecture decisions that need a second opinion</li>
-                <li>• Agent systems that aren't behaving as expected</li>
-                <li>• Performance bottlenecks or scaling challenges</li>
-                <li>• Ideas you want to validate before building</li>
-                <li>• Or just questions about how this stuff actually works</li>
-              </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div>• Architecture decisions that need a second opinion</div>
+              <div>• Agent systems that aren't behaving as expected</div>
+              <div>• Performance bottlenecks or scaling challenges</div>
+              <div>• Ideas you want to validate before building</div>
             </div>
           </div>
         </div>
