@@ -20,8 +20,20 @@ const Index = () => {
             { name: "Clay", permitted: false },
           ]}
         />
-        <ProjectHighlights />
-        <Contact />
+        {/* Side by side layout for Prior Work and About Ocean */}
+        <div className="max-w-7xl mx-auto px-6 py-20 border-t border-border/30">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Prior Work - Left Side */}
+            <div>
+              <ProjectHighlights />
+            </div>
+            
+            {/* About Ocean - Right Side */}
+            <div>
+              <Contact />
+            </div>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>

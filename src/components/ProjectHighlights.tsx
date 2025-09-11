@@ -5,7 +5,7 @@ import { ArrowRight, Github, BookOpen } from "lucide-react";
 
 const ProjectHighlights = () => {
   return (
-    <section id="projects" className="max-w-7xl mx-auto px-6 py-20 border-t border-border/30">
+    <div>
       <div className="mb-10">
         <h2 className="text-2xl font-bold text-foreground mb-4">
           Prior work
@@ -111,7 +111,7 @@ const ProjectHighlights = () => {
           </Button>
         </Link>
       </div>
-    </section>
+    </div>
   );
 };
 

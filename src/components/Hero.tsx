@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[70vh] overflow-hidden gradient-flow">
+    <section className="relative min-h-screen overflow-hidden gradient-flow">
       {/* Cinematic Background Effects */}
       <div className="absolute inset-0">
         {/* Flowing Energy Ribbon */}
@@ -12,28 +12,20 @@ const Hero = () => {
         {/* Subtle Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-primary/5 to-transparent" />
+        
+        {/* Smooth Blue to Black Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
       </div>
 
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-6 py-20 flex items-center min-h-[70vh]">
-        <div className="max-w-4xl">
-          <div className="mb-4">
-            <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
-              Agentic Systems Architecture
-            </span>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
+      <div className="relative max-w-6xl mx-auto px-6 py-16 flex flex-col justify-center min-h-screen">
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground mb-8 leading-tight text-center" style={{ fontFamily: 'Georgia, serif' }}>
             Your AI Vision, Built and Running in
             <span className="block text-primary">Weeks Not Years</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl">
-            Turn ambitious AI ideas into production-ready autonomous systems that actually ship.
-            <strong className="text-foreground"> No PhD required.</strong>
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
             <Button size="lg" className="text-lg px-8 py-6 energy-glow" asChild>
               <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
                 Book a session
@@ -52,44 +44,87 @@ const Hero = () => {
             </Button>
           </div>
 
-          {/* How a Session Works */}
-          <div className="mt-16 mb-8 max-w-3xl">
-            <h3 className="text-lg font-semibold text-foreground mb-4">What happens in a session</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-              <div>
-                <div className="text-primary font-medium">Review</div>
-                <div className="text-muted-foreground">Your current agent setup</div>
-              </div>
-              <div>
-                <div className="text-primary font-medium">Identify</div>
-                <div className="text-muted-foreground">Bottlenecks, failure modes</div>
-              </div>
-              <div>
-                <div className="text-primary font-medium">Recommend</div>
-                <div className="text-muted-foreground">Specific patterns to try</div>
-              </div>
-              <div>
-                <div className="text-primary font-medium">Document</div>
-                <div className="text-muted-foreground">Action items, resources</div>
+          {/* Process Flow */}
+          <div className="mb-12">
+            <div className="relative">
+              {/* Subtle connecting line */}
+              <div className="absolute top-6 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+              
+              {/* Horizontal flow */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Review */}
+                <div className="text-center group">
+                  <div className="flex justify-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <span className="text-sm font-medium text-primary">01</span>
+                    </div>
+                  </div>
+                  <h4 className="text-lg font-medium text-foreground mb-1">Review</h4>
+                  <p className="text-muted-foreground text-sm">Your current agent setup</p>
+                </div>
+
+                {/* Identify */}
+                <div className="text-center group">
+                  <div className="flex justify-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <span className="text-sm font-medium text-primary">02</span>
+                    </div>
+                  </div>
+                  <h4 className="text-lg font-medium text-foreground mb-1">Identify</h4>
+                  <p className="text-muted-foreground text-sm">Bottlenecks, failure modes</p>
+                </div>
+
+                {/* Recommend */}
+                <div className="text-center group">
+                  <div className="flex justify-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <span className="text-sm font-medium text-primary">03</span>
+                    </div>
+                  </div>
+                  <h4 className="text-lg font-medium text-foreground mb-1">Recommend</h4>
+                  <p className="text-muted-foreground text-sm">Specific patterns to try</p>
+                </div>
+
+                {/* Document */}
+                <div className="text-center group">
+                  <div className="flex justify-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <span className="text-sm font-medium text-primary">04</span>
+                    </div>
+                  </div>
+                  <h4 className="text-lg font-medium text-foreground mb-1">Document</h4>
+                  <p className="text-muted-foreground text-sm">Action items, resources</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary" />
-              <span>360+ GitHub stars</span>
+          <div className="pt-8">
+            <div className="text-center mb-4">
+              <p className="text-sm text-white/70 font-medium tracking-wide uppercase">Trusted by teams at</p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary" />
-              <span>Framework-agnostic</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary" />
-              <span>Production-ready</span>
+            <div className="flex items-center justify-center gap-8">
+              <div className="group">
+                <div className="text-lg font-semibold text-white group-hover:text-primary transition-colors duration-200">
+                  Google Cloud
+                </div>
+              </div>
+              <div className="w-px h-4 bg-white/20"></div>
+              <div className="group">
+                <div className="text-lg font-semibold text-white group-hover:text-primary transition-colors duration-200">
+                  NVIDIA
+                </div>
+              </div>
+              <div className="w-px h-4 bg-white/20"></div>
+              <div className="group">
+                <div className="text-lg font-semibold text-white group-hover:text-primary transition-colors duration-200">
+                  Clay
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>
