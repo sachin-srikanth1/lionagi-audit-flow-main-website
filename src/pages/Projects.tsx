@@ -9,13 +9,30 @@ const ProjectsPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Open Source Projects</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl">
-            Frameworks I built. They encode the patterns I apply in consulting. Adoption is optional.
-          </p>
+      <main className="relative overflow-hidden gradient-flow">
+        {/* Cinematic Background Effects */}
+        <div className="absolute inset-0">
+          {/* Flowing Energy Ribbon */}
+          <div className="absolute top-1/4 left-0 w-full h-0.5 flow-ribbon" />
+          <div className="absolute top-3/4 right-0 w-3/4 h-0.5 flow-ribbon" style={{ animationDelay: '1s' }} />
+          
+          {/* Subtle Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
+          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-primary/5 to-transparent" />
+          
+          {/* Smooth Blue to Black Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
         </div>
+
+        <div className="relative max-w-6xl mx-auto px-6 py-16">
+          <div className="max-w-5xl mx-auto mb-16">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground mb-8 leading-tight text-center" style={{ fontFamily: 'Georgia, serif' }}>
+              Open Source Projects
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-center">
+              Frameworks I've Built - Reusable playbooks for faster outcomes
+            </p>
+          </div>
 
         {/* LionAGI Section */}
         <div className="mb-16">
@@ -23,7 +40,7 @@ const ProjectsPage = () => {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl font-bold text-foreground mb-2">LionAGI</CardTitle>
+                  <CardTitle className="text-2xl font-normal text-foreground mb-2" style={{ fontFamily: 'Georgia, serif' }}>LionAGI</CardTitle>
                   <CardDescription className="text-lg">
                     Agent orchestration framework with observable workflows and formal verification
                   </CardDescription>
@@ -116,7 +133,7 @@ const ProjectsPage = () => {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl font-bold text-foreground mb-2">Pydapter</CardTitle>
+                  <CardTitle className="text-2xl font-normal text-foreground mb-2" style={{ fontFamily: 'Georgia, serif' }}>Pydapter</CardTitle>
                   <CardDescription className="text-lg">
                     Universal data connection layer with async-first design and migration utilities
                   </CardDescription>
@@ -203,19 +220,20 @@ const ProjectsPage = () => {
           </Card>
         </div>
 
-        {/* CTA Section */}
-        <div className="text-center py-12 border-t border-border/30">
-          <h2 className="text-2xl font-bold text-foreground mb-4">
-            Ready to Build with These Frameworks?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Need help with your agent systems? Let's talk architecture and implementation.
-          </p>
-          <Link to="/booking">
-            <Button size="lg" className="text-lg px-8 energy-glow">
-              Book a Session
-            </Button>
-          </Link>
+          {/* CTA Section */}
+          <div className="text-center py-16">
+            <h2 className="text-3xl font-normal text-foreground mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              Ready to Build with These Frameworks?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Need help with your agent systems? Let's talk architecture and implementation.
+            </p>
+            <Link to="/booking">
+              <Button size="lg" className="text-lg px-8 py-6 energy-glow">
+                Book a Session
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
       <Footer />

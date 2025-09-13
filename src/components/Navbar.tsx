@@ -38,15 +38,6 @@ const Navbar = () => {
             >
               Booking
             </Link>
-            {isHomePage ? (
-              <a href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </a>
-            ) : (
-              <Link to="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </Link>
-            )}
           </div>
         </div>
       </div>
