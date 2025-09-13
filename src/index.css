@@ -12,33 +12,33 @@
 
 @layer base {
   :root {
-    /* Premium Dark-First Design (QuantumBlack inspired) */
-    --background: 220 27% 6%;          /* Deep navy-black */
-    --foreground: 210 17% 92%;         /* Crisp white-blue */
+    /* Light Mode Theme */
+    --background: 0 0% 100%;           /* Pure white */
+    --foreground: 220 27% 6%;          /* Dark navy text */
 
-    --card: 220 27% 8%;                /* Slightly lighter card */
-    --card-foreground: 210 17% 92%;
+    --card: 0 0% 98%;                  /* Light grey card */
+    --card-foreground: 220 27% 6%;
 
-    --popover: 220 27% 8%;
-    --popover-foreground: 210 17% 92%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 220 27% 6%;
 
     --primary: 214 84% 56%;            /* Electric blue primary */
-    --primary-foreground: 220 27% 6%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 27% 12%;          /* Subtle elevation */
-    --secondary-foreground: 210 17% 85%;
+    --secondary: 220 27% 95%;          /* Light grey */
+    --secondary-foreground: 220 27% 6%;
 
-    --muted: 220 27% 10%;              /* Muted backgrounds */
-    --muted-foreground: 215 15% 65%;   /* Readable muted text */
+    --muted: 220 27% 96%;             /* Very light grey */
+    --muted-foreground: 215 15% 35%;  /* Darker muted text */
 
     --accent: 214 84% 56%;             /* Match primary for consistency */
-    --accent-foreground: 220 27% 6%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 210 17% 92%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 27% 16%;             /* Subtle borders */
-    --input: 220 27% 12%;              /* Input backgrounds */
+    --border: 220 27% 90%;             /* Light borders */
+    --input: 220 27% 96%;              /* Light input backgrounds */
     --ring: 214 84% 56%;               /* Focus rings */
 
     --radius: 6px;
@@ -74,13 +74,60 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* Premium Cinematic Utilities */
+  /* Dark Mode Theme */
   .dark {
-    /* Already dark-first, no overrides needed */
+    --background: 220 27% 6%;          /* Deep navy-black */
+    --foreground: 210 17% 92%;         /* Crisp white-blue */
+
+    --card: 220 27% 8%;                /* Slightly lighter card */
+    --card-foreground: 210 17% 92%;
+
+    --popover: 220 27% 8%;
+    --popover-foreground: 210 17% 92%;
+
+    --primary: 214 84% 56%;            /* Electric blue primary */
+    --primary-foreground: 220 27% 6%;
+
+    --secondary: 220 27% 12%;          /* Subtle elevation */
+    --secondary-foreground: 210 17% 85%;
+
+    --muted: 220 27% 10%;              /* Muted backgrounds */
+    --muted-foreground: 215 15% 65%;   /* Readable muted text */
+
+    --accent: 214 84% 56%;             /* Match primary for consistency */
+    --accent-foreground: 220 27% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 17% 92%;
+
+    --border: 220 27% 16%;             /* Subtle borders */
+    --input: 220 27% 12%;              /* Input backgrounds */
+    --ring: 214 84% 56%;               /* Focus rings */
   }
 
-  /* QuantumBlack-inspired Gradient System */
+  /* Light Mode Gradient System */
   .gradient-flow {
+    background: linear-gradient(135deg, 
+      hsl(0, 0%, 100%) 0%,
+      hsl(220, 27%, 98%) 25%,
+      hsl(214, 45%, 96%) 50%,
+      hsl(0, 0%, 100%) 100%
+    );
+  }
+
+  .gradient-card {
+    background: linear-gradient(145deg,
+      hsl(0, 0%, 100%) 0%,
+      hsl(220, 27%, 98%) 100%
+    );
+    border: 1px solid hsl(220, 27%, 90%);
+    box-shadow: 
+      0 4px 24px hsl(220, 27%, 6% / 0.1),
+      0 2px 8px hsl(214, 84%, 56% / 0.05);
+  }
+
+  /* Dark Mode Gradient System */
+  .dark .gradient-flow {
     background: linear-gradient(135deg, 
       hsl(220, 27%, 8%) 0%,
       hsl(218, 35%, 12%) 25%,
@@ -89,7 +136,7 @@
     );
   }
 
-  .gradient-card {
+  .dark .gradient-card {
     background: linear-gradient(145deg,
       hsl(220, 27%, 8%) 0%,
       hsl(218, 30%, 10%) 100%

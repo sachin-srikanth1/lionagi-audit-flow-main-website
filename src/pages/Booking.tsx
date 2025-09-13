@@ -19,8 +19,8 @@ const BookingPage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
           <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-primary/5 to-transparent" />
           
-          {/* Smooth Blue to Black Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+          {/* Smooth Blue to Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-16">
@@ -29,8 +29,8 @@ const BookingPage = () => {
               Book a Session
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-center">
-              Expert technical consultation with Ocean Li. 
-              Advisory sessions for agent systems architecture.
+              Expert <span className="text-primary font-medium">technical consultation</span> with Ocean Li. 
+              Advisory sessions for <span className="text-primary font-medium">agent systems architecture</span>.
             </p>
           </div>
 
@@ -111,16 +111,16 @@ const BookingPage = () => {
             <h2 className="text-3xl font-normal text-foreground mb-6" style={{ fontFamily: 'Georgia, serif' }}>How it works</h2>
             <div className="max-w-3xl mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                You bring the problem—I bring the patterns. We'll work through your specific 
-                challenge together, whether it's agent orchestration, MCP integration, 
+                You bring the problem—I bring the <span className="text-primary font-medium">patterns</span>. We'll work through your specific 
+                challenge together, whether it's <span className="text-primary font-medium">agent orchestration</span>, <span className="text-primary font-medium">MCP integration</span>, 
                 or figuring out why your system isn't behaving as expected.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
-                <div>• Architecture decisions that need a second opinion</div>
-                <div>• Agent systems that aren't behaving as expected</div>
-                <div>• Performance bottlenecks or scaling challenges</div>
-                <div>• Ideas you want to validate before building</div>
+                <div>• <span className="text-primary font-medium">Architecture decisions</span> that need a second opinion</div>
+                <div>• <span className="text-primary font-medium">Agent systems</span> that aren't behaving as expected</div>
+                <div>• <span className="text-primary font-medium">Performance bottlenecks</span> or scaling challenges</div>
+                <div>• Ideas you want to <span className="text-primary font-medium">validate</span> before building</div>
               </div>
             </div>
           </div>

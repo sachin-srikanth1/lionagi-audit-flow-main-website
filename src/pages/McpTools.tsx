@@ -26,8 +26,8 @@ const McpToolsPage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
           <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-primary/5 to-transparent" />
           
-          {/* Smooth Blue to Black Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+          {/* Smooth Blue to Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-16">
@@ -36,7 +36,7 @@ const McpToolsPage = () => {
               MCP Tools Ecosystem
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-center">
-              MCP tools for memory, semantic search, and versioned context. Works with Claude and VS Code. Framework-agnostic integration.
+              <span className="text-primary font-medium">MCP tools</span> for <span className="text-primary font-medium">memory</span>, <span className="text-primary font-medium">semantic search</span>, and versioned context. Works with <span className="text-primary font-medium">Claude</span> and <span className="text-primary font-medium">VS Code</span>. Framework-agnostic integration.
             </p>
           </div>
 

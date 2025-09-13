@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const location = useLocation();
@@ -38,6 +39,9 @@ const Navbar = () => {
             >
               Booking
             </Link>
+            <div className="flex items-center">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

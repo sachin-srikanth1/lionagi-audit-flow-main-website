@@ -14,7 +14,7 @@ interface Props {
 
 export default function ClientProof({ 
   clients, 
-  textFallback = "Trusted by teams at Google Cloud, NVIDIA, and Clay."
+  textFallback = ""
 }: Props) {
   const permitted = clients.filter(c => c.permitted && c.logo);
   

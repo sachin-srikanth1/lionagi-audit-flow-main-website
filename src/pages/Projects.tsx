@@ -20,8 +20,8 @@ const ProjectsPage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20" />
           <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-primary/5 to-transparent" />
           
-          {/* Smooth Blue to Black Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+          {/* Smooth Blue to Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-16">
@@ -42,7 +42,7 @@ const ProjectsPage = () => {
                 <div>
                   <CardTitle className="text-2xl font-normal text-foreground mb-2" style={{ fontFamily: 'Georgia, serif' }}>LionAGI</CardTitle>
                   <CardDescription className="text-lg">
-                    Agent orchestration framework with observable workflows and formal verification
+                    <span className="text-primary font-medium">Agent orchestration</span> framework with <span className="text-primary font-medium">observable workflows</span> and formal verification
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
@@ -135,7 +135,7 @@ const ProjectsPage = () => {
                 <div>
                   <CardTitle className="text-2xl font-normal text-foreground mb-2" style={{ fontFamily: 'Georgia, serif' }}>Pydapter</CardTitle>
                   <CardDescription className="text-lg">
-                    Universal data connection layer with async-first design and migration utilities
+                    <span className="text-primary font-medium">Universal data connection</span> layer with <span className="text-primary font-medium">async-first design</span> and migration utilities
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
