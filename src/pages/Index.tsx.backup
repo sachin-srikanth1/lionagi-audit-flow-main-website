@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import ProjectHighlights from "@/components/ProjectHighlights";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SkipLink from "@/components/SkipLink";
@@ -11,10 +12,16 @@ const Index = () => {
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         <Hero />
-        {/* About Ocean Section */}
+        {/* Side by side layout for Prior Work and About Ocean */}
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="flex justify-center">
-            <div className="max-w-2xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Prior Work - Left Side */}
+            <div>
+              <ProjectHighlights />
+            </div>
+            
+            {/* About Ocean - Right Side */}
+            <div>
               <Contact />
             </div>
           </div>

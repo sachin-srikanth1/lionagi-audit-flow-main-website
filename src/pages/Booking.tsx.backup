@@ -45,7 +45,7 @@ const BookingPage = () => {
                   <div className="text-sm text-muted-foreground">Triage</div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4 text-center">Quick assessment • Specific question answered</p>
-                <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-primary-foreground transition-colors" asChild>
+                <Button variant="outline" size="sm" className="w-full" asChild>
                   <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
                     Book
                   </a>
@@ -63,7 +63,7 @@ const BookingPage = () => {
                   <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded mt-2 inline-block">Most Popular</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4 text-center">Architecture review • Implementation strategy • Clear next steps</p>
-                <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-primary-foreground transition-colors" asChild>
+                <Button size="sm" className="w-full energy-glow" asChild>
                   <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
                     Book
                   </a>
@@ -80,7 +80,7 @@ const BookingPage = () => {
                   <div className="text-sm text-muted-foreground">Working Session</div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4 text-center">Live problem solving • Build prototype together • Multiple topics covered</p>
-                <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-primary-foreground transition-colors" asChild>
+                <Button variant="outline" size="sm" className="w-full" asChild>
                   <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
                     Book
                   </a>
@@ -97,7 +97,7 @@ const BookingPage = () => {
                   <div className="text-sm text-muted-foreground">Deep Exploration</div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4 text-center">Deep system exploration • Strategic planning • Comprehensive review</p>
-                <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-primary-foreground transition-colors" asChild>
+                <Button variant="outline" size="sm" className="w-full" asChild>
                   <a href="https://calendly.com/ocean-lionagi" target="_blank" rel="noopener noreferrer">
                     Book
                   </a>
